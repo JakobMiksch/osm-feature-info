@@ -4,7 +4,7 @@ Attempt to create an API to get information about OSM features around a location
 
 ## Setup
 
-## Clone Repository with Submodule
+Tested on Linux and WSL:
 
 ```sh
 # when cloning the first time
@@ -13,17 +13,11 @@ git clone --recursive git@github.com:JakobMiksch/osm_feature_info.git
 # HTTPS version
 git clone --recursive https://github.com/JakobMiksch/osm_feature_info.git
 
-# if you have cloned already
+# if case you forgot to use the "--recursive" flag
 git submodule update --init
-```
 
-### Using Docker
-
-Tested on Linux and WSL. Adapt for other operating systems.
-
-```sh
 # start services
-docker compose up -d postgres pg_featureserv
+docker compose up -d --build
 
 # download sample data
 wget -O data/sample.pbf https://download.geofabrik.de/europe/germany/bremen-latest.osm.pbf
