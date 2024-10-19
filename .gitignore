@@ -1,4 +1,4 @@
 *.pbf
 *.zip
 assets/
-.env
+pg_featureserv

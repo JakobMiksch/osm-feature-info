@@ -1,0 +1,59 @@
+services:
+
+  pg_featureserv:
+    build:
+      context: ./pg_featureserv
+      args:
+        - GOLANG_VERSION=1.21.6
+        - TARGETARCH=amd64
+        - BASE_REGISTRY=registry.access.redhat.com
+        - BASE_IMAGE=ubi8-micro
+        - PLATFORM=amd64
+        - VERSION=0.999
+        - BUILDTYPE
+      target: multi-stage
+    ports:
+      - "9000:9000"
+    environment:
+      - DATABASE_URL=postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}/${PGDATABASE}
+      - PGFS_WEBSITE_BASEMAPURL=https://tile.openstreetmap.de/{z}/{x}/{y}.png
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgis/postgis:16-3.4
+    hostname: ${PGHOST}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - ./data:/data
+    environment:
+      # required to initialize database
+      - POSTGRES_DB=${PGDATABASE}
+      - POSTGRES_USER=${PGUSER}
+      - POSTGRES_PASSWORD=${PGPASSWORD}
+      # required to be able to queries in psql
+      - PGDATABASE
+      - PGUSER
+      - PGPASSWORD
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  osm2pgsql:
+    image: iboates/osm2pgsql:1.11.0
+    environment:
+      - PGHOST
+      - PGDATABASE
+      - PGUSER
+      - PGPASSWORD
+    volumes:
+      - ./data:/data
+    command: osm2pgsql --slim --output=flex --style=/data/flex_style.lua --prefix=raw /data/sample.pbf
+    depends_on:
+      postgres:
+        condition: service_healthy
