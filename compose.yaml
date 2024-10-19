@@ -1,7 +1,17 @@
 services:
 
   pg_featureserv:
-    image: pramsey/pg_featureserv:20240305
+    build:
+      context: ./pg_featureserv
+      args:
+        - GOLANG_VERSION=1.21.6
+        - TARGETARCH=amd64
+        - BASE_REGISTRY=registry.access.redhat.com
+        - BASE_IMAGE=ubi8-micro
+        - PLATFORM=amd64
+        - VERSION=0.999
+        - BUILDTYPE
+      target: multi-stage
     ports:
       - "9000:9000"
     environment:
@@ -43,7 +53,7 @@ services:
       - PGPASSWORD
     volumes:
       - ./data:/data
-    command: osm2pgsql --slim --output=flex --style=/data/flex_style.lua --prefix=raw /data/sample.pbf
+    command: exit
     depends_on:
       postgres:
         condition: service_healthy

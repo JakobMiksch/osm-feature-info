@@ -1,0 +1,3 @@
+[submodule "pg_featureserv"]
+	path = pg_featureserv
+	url = https://github.com/JakobMiksch/pg_featureserv.git
