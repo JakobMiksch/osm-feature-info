@@ -2,6 +2,8 @@
 <template>
   <main :style="{display: 'flex', width: '100%', height: '100vh'}">
     <div class="item" :style="{flex: 1, overflowY: 'auto'} ">
+      <label for="distance_value">Distance:</label>
+      <input id="distance_value" type="number" name="ticketNum" v-model="distance" @change="reset()" />
       <p v-for="feature in displayedFeatures" :style="{marginLeft: '10px', marginRight: '10px'}">
         {{ feature }}
       </p>
@@ -29,13 +31,18 @@ useGeographic()
 
 const { map, onMapClick  } = useOl()
 const displayedFeatures = ref([])
+const distance = ref(10)
 
 const vectorSource = new VectorSource()
 
+const reset = (() => {
+  displayedFeatures.value = []
+  vectorSource.clear()
+})
+
 onMapClick((event)=>{
   const [lon, lat ] = event.coordinate
-  const distance = 10
-  const url = `http://localhost:9000/functions/postgisftw.osm_feature_info/items.json?latitude=${lat}&longitude=${lon}&distance=${distance}`
+  const url = `http://localhost:9000/functions/postgisftw.osm_feature_info/items.json?latitude=${lat}&longitude=${lon}&distance=${distance.value}`
   fetch(url)
   .then(async response =>response.json())
   .then(geojson => {
@@ -49,8 +56,7 @@ onMapClick((event)=>{
     vectorSource.addFeatures(olFeatures)
 
   }).catch(()=>{
-    displayedFeatures.value = []
-    vectorSource.clear()
+    reset()
   })
 
 })
@@ -74,7 +80,9 @@ onMounted(() => {
     )
 
 
-  map.value.getView().setCenter([8.755, 53.112])
+  map.value.getView().setCenter([8.40064, 49.00939])
   map.value.getView().setZoom(15)
 })
+
+
 </script>
