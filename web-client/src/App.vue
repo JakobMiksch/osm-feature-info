@@ -42,7 +42,7 @@ const reset = (() => {
 
 onMapClick((event)=>{
   const [lon, lat ] = event.coordinate
-  const url = `http://localhost:9000/functions/postgisftw.osm_feature_info_geog/items.json?latitude=${lat}&longitude=${lon}&distance=${distance.value}`
+  const url = `http://localhost:9000/functions/postgisftw.osm_feature_info_webmercator_unprecise/items.json?latitude=${lat}&longitude=${lon}&distance=${distance.value}`
   fetch(url)
   .then(async response =>response.json())
   .then(geojson => {
