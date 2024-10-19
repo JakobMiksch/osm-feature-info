@@ -26,6 +26,9 @@ docker compose run --rm osm2pgsql \
   --prefix=raw \
   /data/sample.pbf
 
+# post-process import
+docker compose exec db psql -f data/post_process_tables.sql
+
 # add function to DB
 docker compose exec db psql -f /data/query_function.sql
 ```
@@ -45,7 +48,9 @@ docker compose exec db psql -f /data/query_function.sql
     data/sample.pbf
     ```
 
-3. Load Function from `data/query_function.sql` into database
+3. Load these scripts to the database:
+    - `data/query_function.sql`
+    - `data/post_process_tables.sql`
 4. Install `pg_featureserv` (Download link for Linux: <https://postgisftw.s3.amazonaws.com/pg_featureserv_latest_linux.zip>) and run it via:
 
     ```sh
