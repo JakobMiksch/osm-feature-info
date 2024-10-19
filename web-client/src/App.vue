@@ -3,6 +3,9 @@
   <main :style="{display: 'flex', width: '100%', height: '100vh'}">
     <div class="item" :style="{flex: 1, overflowY: 'auto'} ">
       <label for="distance_value">Distance:</label>
+      <select v-model="functionName">
+        <option v-for="name in functionNameOptions">{{ name }}</option>
+      </select>
       <input id="distance_value" type="number" name="ticketNum" v-model="distance" @change="reset()" />
       <p v-for="feature in displayedFeatures" :style="{marginLeft: '10px', marginRight: '10px'}">
         {{ feature }}
@@ -32,6 +35,8 @@ useGeographic()
 const { map, onMapClick  } = useOl()
 const displayedFeatures = ref([])
 const distance = ref(10)
+const functionName = ref("")
+const functionNameOptions = ref(["osm_feature_info_webmercator_unprecise", "osm_feature_info_geog"])
 
 const vectorSource = new VectorSource()
 
@@ -42,7 +47,7 @@ const reset = (() => {
 
 onMapClick((event)=>{
   const [lon, lat ] = event.coordinate
-  const url = `http://localhost:9000/functions/postgisftw.osm_feature_info_webmercator_unprecise/items.json?latitude=${lat}&longitude=${lon}&distance=${distance.value}`
+  const url = `http://localhost:9000/functions/postgisftw.${functionName.value}/items.json?latitude=${lat}&longitude=${lon}&distance=${distance.value}`
   fetch(url)
   .then(async response =>response.json())
   .then(geojson => {
