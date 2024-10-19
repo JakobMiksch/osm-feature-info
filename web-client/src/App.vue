@@ -78,5 +78,3 @@ onMounted(() => {
   map.value.getView().setZoom(15)
 })
 </script>
-
-
