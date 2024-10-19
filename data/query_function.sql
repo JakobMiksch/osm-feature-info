@@ -1,9 +1,9 @@
 CREATE SCHEMA IF NOT EXISTS postgisftw;
 
 
-DROP FUNCTION IF EXISTS postgisftw.osm_feature_info;
+DROP FUNCTION IF EXISTS postgisftw.osm_feature_info_geog;
 
-CREATE OR REPLACE FUNCTION postgisftw.osm_feature_info(
+CREATE OR REPLACE FUNCTION postgisftw.osm_feature_info_geog(
     latitude float,
     longitude float,
     distance int
