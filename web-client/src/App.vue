@@ -80,7 +80,7 @@ onMounted(() => {
     )
 
 
-  map.value.getView().setCenter([8.40064, 49.00939])
+  map.value.getView().setCenter([8.81721, 53.07423])
   map.value.getView().setZoom(15)
 })
 
