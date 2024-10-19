@@ -8,7 +8,7 @@ Tested on Linux and WSL. Adapt for other operating systems.
 
 ```sh
 # start services
-docker compose up -d
+docker compose up -d postgres pg_featureserv
 
 # download sample data
 wget -O data/sample.pbf https://download.geofabrik.de/europe/germany/bremen-latest.osm.pbf
@@ -22,10 +22,10 @@ docker compose run --rm osm2pgsql \
   /data/sample.pbf
 
 # post-process import
-docker compose exec db psql -f data/post_process_tables.sql
+docker compose exec postgres psql -f data/post_process_tables.sql
 
 # add function to DB
-docker compose exec db psql -f /data/query_function.sql
+docker compose exec postgres psql -f /data/query_function.sql
 ```
 
 ## Request API
