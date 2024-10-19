@@ -33,7 +33,7 @@ docker compose exec db psql -f data/post_process_tables.sql
 docker compose exec db psql -f /data/query_function.sql
 ```
 
-## Without Docker
+### Without Docker
 
 1. create PostGIS database
 2. load OSM data:
@@ -58,8 +58,6 @@ docker compose exec db psql -f /data/query_function.sql
     export PGFS_WEBSITE_BASEMAPURL="https://tile.openstreetmap.de/{z}/{x}/{y}.png"
     ./pg_featureserv
     ```
-
-5. Starting webclient is described in [web-client/README.md](web-client/README.md)
 
 ## Request API
 
