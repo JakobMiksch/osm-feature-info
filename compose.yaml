@@ -57,3 +57,11 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+
+  web-client:
+    build: ./web-client
+    ports:
+      - "80:4173"
+
+volumes:
+  osm_pg_featureserv_db_data:
