@@ -26,6 +26,9 @@ docker compose run --rm osm2pgsql \
   --prefix=raw \
   /data/sample.pbf
 
+# post-process import
+docker compose exec db psql -f data/post_process_tables.sql
+
 # add function to DB
 docker compose exec db psql -f /data/query_function.sql
 
@@ -48,7 +51,9 @@ docker compose up -d --build web-client
     data/sample.pbf
     ```
 
-3. Load Function from `data/query_function.sql` into database
+3. Load these scripts to the database:
+    - `data/query_function.sql`
+    - `data/post_process_tables.sql`
 4. Install `pg_featureserv` (Download link for Linux: <https://postgisftw.s3.amazonaws.com/pg_featureserv_latest_linux.zip>) and run it via:
 
     ```sh
@@ -65,4 +70,3 @@ Request the API with your browser or any other tool:
 
 - HTML: <http://localhost:9000/functions/postgisftw.osm_feature_info/items.html?latitude=53.112&longitude=8.755&distance=50&limit=10000>
 - JSON: <http://localhost:9000/functions/postgisftw.osm_feature_info/items.json?latitude=53.112&longitude=8.755&distance=50&limit=10000>
-
