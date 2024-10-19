@@ -53,7 +53,7 @@ services:
       - PGPASSWORD
     volumes:
       - ./data:/data
-    command: osm2pgsql --slim --output=flex --style=/data/flex_style.lua --prefix=raw /data/sample.pbf
+    command: exit
     depends_on:
       postgres:
         condition: service_healthy
