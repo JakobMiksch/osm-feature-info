@@ -3,7 +3,7 @@
   <main :style="{display: 'flex', width: '100%', height: '100vh'}">
     <div class="item" :style="{flex: 1, overflowY: 'auto'} ">
       <label for="distance_value">Distance:</label>
-      <select v-model="functionName">
+      <select v-model="functionName" @change="reset()">
         <option v-for="name in functionNameOptions">{{ name }}</option>
       </select>
       <input id="distance_value" type="number" name="ticketNum" v-model="distance" @change="reset()" />
@@ -29,6 +29,7 @@ import {GeoJSON} from "ol/format"
 import XYZ from 'ol/source/XYZ'
 import type { Feature } from 'ol'
 import type { Geometry } from 'ol/geom'
+import { extractRuntimeProps } from 'vue/compiler-sfc'
 
 useGeographic()
 
@@ -36,7 +37,7 @@ const { map, onMapClick  } = useOl()
 const displayedFeatures = ref([])
 const distance = ref(10)
 const functionName = ref("")
-const functionNameOptions = ref(["osm_feature_info_webmercator_unprecise", "osm_feature_info_geog"])
+const functionNameOptions = ref([])
 
 const vectorSource = new VectorSource()
 
@@ -45,9 +46,11 @@ const reset = (() => {
   vectorSource.clear()
 })
 
+// TODO: fix scrolling issue, so that the text box does not increase the size of the map or viewport or canvas
+
 onMapClick((event)=>{
   const [lon, lat ] = event.coordinate
-  const url = `http://localhost:9000/functions/postgisftw.${functionName.value}/items.json?latitude=${lat}&longitude=${lon}&distance=${distance.value}`
+  const url = `http://localhost:9000/functions/${functionName.value}/items.json?latitude=${lat}&longitude=${lon}&distance=${distance.value}`
   fetch(url)
   .then(async response =>response.json())
   .then(geojson => {
@@ -67,6 +70,11 @@ onMapClick((event)=>{
 })
 
 onMounted(() => {
+
+  fetch('http://localhost:9000/functions.json').then((response) => response.json()).then((data) => {
+    functionNameOptions.value = data.functions.map(item => item.id)
+    functionName.value = functionNameOptions.value[0]
+  })
 
   map.value.addLayer(
     new TileLayer({
