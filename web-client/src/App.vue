@@ -32,7 +32,7 @@ import VectorLayer from 'ol/layer/Vector'
 import {GeoJSON} from "ol/format"
 import XYZ from 'ol/source/XYZ'
 import { Feature } from 'ol'
-import { Polygon, type Geometry } from 'ol/geom'
+import { Point, Polygon, type Geometry } from 'ol/geom'
 import axios from 'axios'
 
 useGeographic()
@@ -46,11 +46,13 @@ const clickedLongitude = ref(NaN)
 
 const extractedSearchRadius = computed(() => Math.round(10 * Math.pow(1.5, 19 - zoom.value)))
 
-const vectorSource = new VectorSource()
+const resultVectorSource = new VectorSource()
+const pointDataSource = new VectorSource()
 
 const reset = (() => {
   displayedFeatures.value = []
-  vectorSource.clear()
+  resultVectorSource.clear()
+  pointDataSource.clear()
 })
 
 const triggerRequest = () => {
@@ -75,8 +77,11 @@ const triggerRequest = () => {
 
     const olFeatures = new GeoJSON().readFeatures(geojson) as any // TODO: fix TS anys
 
-    vectorSource.clear()
-    vectorSource.addFeatures(olFeatures)
+    resultVectorSource.clear()
+    resultVectorSource.addFeatures(olFeatures)
+
+    pointDataSource.clear()
+    pointDataSource.addFeature(new Feature({geometry: new Point([longitude, latitude])}))
 
   }).catch(()=>{
     reset()
@@ -112,8 +117,17 @@ onMounted(() => {
 
     map.value.addLayer(
       new VectorLayer({
-        source:  vectorSource
+        source:  resultVectorSource
       })
+    )
+    map.value.addLayer(
+      new VectorLayer({
+        source:  pointDataSource,
+        style: {
+          'circle-radius': 4,
+          'circle-fill-color': 'red'
+        }
+      }),
     )
 
   axios('http://localhost:9000/collections/public.geom_nodes.json')
