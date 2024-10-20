@@ -1,6 +1,6 @@
 # Feature Info API for OpenStreetMap
 
-Attempt to create an API to get information about OSM features around a location.
+Attempt to create an API to get information about OSM features around a location. It current goal is to create function that mimics the same output as the existing feature info function on <www.osm.org>. Find the source code of the existing function [here](https://github.com/openstreetmap/openstreetmap-website/blob/6d0c2913326fbfdf3578416853e31d7a950d97ed/app/assets/javascripts/index/query.js#L252-L307).
 
 ## Setup
 
@@ -39,7 +39,6 @@ docker compose exec postgres psql -f data/post_process_tables.sql
 # add function to DB
 docker compose exec postgres psql -f /data/query_function.sql
 ```
-
 
 ## Request API
 
