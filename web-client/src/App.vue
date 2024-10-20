@@ -48,7 +48,7 @@ const minZoomForQuery = 14
 const { map, onMapClick, extent, zoom } = useOl()
 const displayedFeatures = ref([])
 const functionName = ref("")
-const functionNameOptions = ref([])
+const functionNameOptions = ref<string[]>()
 const clickedLatitude = ref(NaN)
 const clickedLongitude = ref(NaN)
 
@@ -113,8 +113,13 @@ onMounted(() => {
     .then(response => response.data)
     .then((functionsInfo) => {
       // @ts-ignore
-      functionNameOptions.value = functionsInfo.functions.map(item => item.id)
-      functionName.value = functionNameOptions.value[0]
+      functionNameOptions.value = functionsInfo.functions.map(item => item.id) as string[]
+      const preferedFunction = 'postgisftw.osm_website_combi'
+      if (functionNameOptions.value.includes(preferedFunction)) {
+        functionName.value = preferedFunction
+      } else {
+        functionName.value = functionNameOptions.value[0]
+      }
   })
 
   map.value.addLayer(
