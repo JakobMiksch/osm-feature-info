@@ -4,6 +4,7 @@
       <select v-model="functionName" @change="triggerRequest()">
         <option v-for="name in functionNameOptions">{{ name }}</option>
       </select>
+      <p>Zoom Level: {{ zoom?.toFixed(2) }}</p>
       <p>Search Radius: {{ extractedSearchRadius }} meter</p>
       <p v-if="displayedFeatures.length > 0">{{ displayedFeatures.length }} features found</p>
 
@@ -54,6 +55,11 @@ const reset = (() => {
 
 const triggerRequest = () => {
   const url = `http://localhost:9000/functions/${functionName.value}/items.json`
+  const minZoom = 14
+  if (zoom.value < minZoom) {
+    alert(`Zoom must be below ${minZoom}`)
+    return
+  }
 
   const [min_lon, min_lat, max_lon, max_lat ] = extent.value
   const latitude = clickedLatitude.value
