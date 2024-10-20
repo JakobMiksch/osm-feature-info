@@ -31,9 +31,10 @@ import VectorLayer from 'ol/layer/Vector'
 
 import {GeoJSON} from "ol/format"
 import XYZ from 'ol/source/XYZ'
-import type { Feature } from 'ol'
-import type { Geometry } from 'ol/geom'
+import { Feature } from 'ol'
+import { Polygon, type Geometry } from 'ol/geom'
 import { extractRuntimeProps } from 'vue/compiler-sfc'
+import { log } from 'console'
 
 useGeographic()
 
@@ -96,9 +97,36 @@ onMounted(() => {
       })
     )
 
+  fetch('http://localhost:9000/collections/public.geom_nodes.json')
+    .then(result => result.json())
+    .then(collectionInfo => {
+      const bbox = collectionInfo.extent.spatial.bbox
 
-  map.value.getView().setCenter([8.81721, 53.07423])
-  map.value.getView().setZoom(15)
+      map.value.getView().fit(bbox)
+
+      const coordinates = [
+        [
+          [bbox[0], bbox[1]], // bottom-left
+          [bbox[2], bbox[1]], // bottom-right
+          [bbox[2], bbox[3]], // top-right
+          [bbox[0], bbox[3]], // top-left
+          [bbox[0], bbox[1]]  // close the polygon
+        ]
+      ];
+
+      const bboxLayer = new VectorLayer({
+        source: new VectorSource({ features: [new Feature({ geometry: new Polygon(coordinates) })] }),
+        style: {
+          'stroke-color': 'gray',
+          'stroke-width': 3
+        }
+      })
+
+      map.value.addLayer(bboxLayer)
+
+
+    })
+
 })
 
 
