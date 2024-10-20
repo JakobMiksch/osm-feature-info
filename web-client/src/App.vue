@@ -1,17 +1,20 @@
-
 <template>
   <main :style="{display: 'flex', width: '100%', height: '100vh'}">
-    <div class="item" :style="{flex: 1, overflowY: 'auto'} ">
+    <div :style="{flex: 1, display: 'flex', flexDirection: 'column'}">
       <label for="distance_value">Distance:</label>
       <select v-model="functionName" @change="reset()">
         <option v-for="name in functionNameOptions">{{ name }}</option>
       </select>
-      <input id="distance_value" type="number" name="ticketNum" v-model="distance" @change="reset()" />
-      <p v-for="feature in displayedFeatures" :style="{marginLeft: '10px', marginRight: '10px'}">
-        {{ feature }}
-      </p>
+      <input id="distance_value" type="number" v-model="distance" @change="reset()" />
+
+      <div :style="{flex: 1, overflowY: 'auto'}">
+        <p v-for="feature in displayedFeatures" :key="feature" :style="{marginLeft: '10px', marginRight: '10px'}">
+          {{ feature }}
+        </p>
+      </div>
     </div>
-    <OlMap  id="map" class="item" :style="{flex: 1}">Div 1</OlMap>
+
+    <OlMap id="map" :style="{flex: 1}"/>
   </main>
 </template>
 
