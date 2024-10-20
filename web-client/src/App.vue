@@ -1,11 +1,10 @@
 <template>
   <main :style="{display: 'flex', width: '100%', height: '100vh'}">
     <div :style="{flex: 1, display: 'flex', flexDirection: 'column'}">
-      <label for="distance_value">Distance:</label>
       <select v-model="functionName" @change="triggerRequest()">
         <option v-for="name in functionNameOptions">{{ name }}</option>
       </select>
-      <input id="distance_value" type="number" v-model="chosenDistance" @change="triggerRequest()" />
+      <p>Search Radius: {{ extractedSearchRadius }} meter</p>
       <p v-if="displayedFeatures.length > 0">{{ displayedFeatures.length }} features found</p>
 
       <div :style="{flex: 1, overflowY: 'auto'}">
@@ -21,7 +20,7 @@
 
 <script setup lang="ts">
 import { fromLonLat, useGeographic } from 'ol/proj'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useOl, OlMap } from 'vue-ol-comp'
 import TileLayer from 'ol/layer/Tile'
 import OSM from 'ol/source/OSM'
@@ -33,18 +32,18 @@ import {GeoJSON} from "ol/format"
 import XYZ from 'ol/source/XYZ'
 import { Feature } from 'ol'
 import { Polygon, type Geometry } from 'ol/geom'
-import { extractRuntimeProps } from 'vue/compiler-sfc'
 import axios from 'axios'
 
 useGeographic()
 
-const { map, onMapClick, extent } = useOl()
+const { map, onMapClick, extent, zoom } = useOl()
 const displayedFeatures = ref([])
-const chosenDistance = ref(10)
 const functionName = ref("")
 const functionNameOptions = ref([])
 const clickedLatitude = ref(NaN)
 const clickedLongitude = ref(NaN)
+
+const extractedSearchRadius = computed(() => Math.round(10 * Math.pow(1.5, 19 - zoom.value)))
 
 const vectorSource = new VectorSource()
 
@@ -59,9 +58,9 @@ const triggerRequest = () => {
   const [min_lon, min_lat, max_lon, max_lat ] = extent.value
   const latitude = clickedLatitude.value
   const longitude = clickedLongitude.value
-  const distance = chosenDistance.value
+  const radius = extractedSearchRadius.value
 
-  axios(url, { params: { latitude, longitude, distance, min_lon, min_lat, max_lon, max_lat  }  })
+  axios(url, { params: { latitude, longitude, radius, min_lon, min_lat, max_lon, max_lat  }  })
   .then(response => response.data)
     .then(geojson => {
 
