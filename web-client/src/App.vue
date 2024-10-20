@@ -2,10 +2,10 @@
   <main :style="{display: 'flex', width: '100%', height: '100vh'}">
     <div :style="{flex: 1, display: 'flex', flexDirection: 'column'}">
       <label for="distance_value">Distance:</label>
-      <select v-model="functionName" @change="reset()">
+      <select v-model="functionName" @change="triggerRequest()">
         <option v-for="name in functionNameOptions">{{ name }}</option>
       </select>
-      <input id="distance_value" type="number" v-model="distance" @change="reset()" />
+      <input id="distance_value" type="number" v-model="distance" @change="triggerRequest()" />
       <p v-if="displayedFeatures.length > 0">{{ displayedFeatures.length }} features found</p>
 
       <div :style="{flex: 1, overflowY: 'auto'}">
@@ -34,7 +34,6 @@ import XYZ from 'ol/source/XYZ'
 import { Feature } from 'ol'
 import { Polygon, type Geometry } from 'ol/geom'
 import { extractRuntimeProps } from 'vue/compiler-sfc'
-import { log } from 'console'
 
 useGeographic()
 
@@ -43,6 +42,8 @@ const displayedFeatures = ref([])
 const distance = ref(10)
 const functionName = ref("")
 const functionNameOptions = ref([])
+const clickedLatitude = ref(NaN)
+const clickedLongitude = ref(NaN)
 
 const vectorSource = new VectorSource()
 
@@ -51,11 +52,8 @@ const reset = (() => {
   vectorSource.clear()
 })
 
-// TODO: fix scrolling issue, so that the text box does not increase the size of the map or viewport or canvas
-
-onMapClick((event)=>{
-  const [lon, lat ] = event.coordinate
-  const url = `http://localhost:9000/functions/${functionName.value}/items.json?latitude=${lat}&longitude=${lon}&distance=${distance.value}`
+const triggerRequest = () => {
+  const url = `http://localhost:9000/functions/${functionName.value}/items.json?latitude=${clickedLatitude.value}&longitude=${clickedLongitude.value}&distance=${distance.value}`
   fetch(url)
   .then(async response =>response.json())
   .then(geojson => {
@@ -72,6 +70,13 @@ onMapClick((event)=>{
     reset()
   })
 
+}
+
+onMapClick((event) => {
+  const [lon, lat] = event.coordinate
+  clickedLatitude.value = lat
+  clickedLongitude.value = lon
+  triggerRequest()
 })
 
 onMounted(() => {
