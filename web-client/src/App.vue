@@ -1,14 +1,21 @@
-
 <template>
   <main :style="{display: 'flex', width: '100%', height: '100vh'}">
-    <div class="item" :style="{flex: 1, overflowY: 'auto'} ">
+    <div :style="{flex: 1, display: 'flex', flexDirection: 'column'}">
       <label for="distance_value">Distance:</label>
-      <input id="distance_value" type="number" name="ticketNum" v-model="distance" @change="reset()" />
-      <p v-for="feature in displayedFeatures" :style="{marginLeft: '10px', marginRight: '10px'}">
-        {{ feature }}
-      </p>
+      <select v-model="functionName" @change="triggerRequest()">
+        <option v-for="name in functionNameOptions">{{ name }}</option>
+      </select>
+      <input id="distance_value" type="number" v-model="distance" @change="triggerRequest()" />
+      <p v-if="displayedFeatures.length > 0">{{ displayedFeatures.length }} features found</p>
+
+      <div :style="{flex: 1, overflowY: 'auto'}">
+        <p v-for="feature in displayedFeatures" :key="feature" :style="{marginLeft: '10px', marginRight: '10px'}">
+          {{ feature }}
+        </p>
+      </div>
     </div>
-    <OlMap  id="map" class="item" :style="{flex: 1}">Div 1</OlMap>
+
+    <OlMap id="map" :style="{flex: 1}"/>
   </main>
 </template>
 
@@ -24,14 +31,19 @@ import VectorLayer from 'ol/layer/Vector'
 
 import {GeoJSON} from "ol/format"
 import XYZ from 'ol/source/XYZ'
-import type { Feature } from 'ol'
-import type { Geometry } from 'ol/geom'
+import { Feature } from 'ol'
+import { Polygon, type Geometry } from 'ol/geom'
+import { extractRuntimeProps } from 'vue/compiler-sfc'
 
 useGeographic()
 
 const { map, onMapClick  } = useOl()
 const displayedFeatures = ref([])
 const distance = ref(10)
+const functionName = ref("")
+const functionNameOptions = ref([])
+const clickedLatitude = ref(NaN)
+const clickedLongitude = ref(NaN)
 
 const vectorSource = new VectorSource()
 
@@ -40,9 +52,8 @@ const reset = (() => {
   vectorSource.clear()
 })
 
-onMapClick((event)=>{
-  const [lon, lat ] = event.coordinate
-  const url = `http://localhost:9000/functions/postgisftw.osm_feature_info/items.json?latitude=${lat}&longitude=${lon}&distance=${distance.value}`
+const triggerRequest = () => {
+  const url = `http://localhost:9000/functions/${functionName.value}/items.json?latitude=${clickedLatitude.value}&longitude=${clickedLongitude.value}&distance=${distance.value}`
   fetch(url)
   .then(async response =>response.json())
   .then(geojson => {
@@ -59,9 +70,21 @@ onMapClick((event)=>{
     reset()
   })
 
+}
+
+onMapClick((event) => {
+  const [lon, lat] = event.coordinate
+  clickedLatitude.value = lat
+  clickedLongitude.value = lon
+  triggerRequest()
 })
 
 onMounted(() => {
+
+  fetch('http://localhost:9000/functions.json').then((response) => response.json()).then((data) => {
+    functionNameOptions.value = data.functions.map(item => item.id)
+    functionName.value = functionNameOptions.value[0]
+  })
 
   map.value.addLayer(
     new TileLayer({
@@ -79,9 +102,36 @@ onMounted(() => {
       })
     )
 
+  fetch('http://localhost:9000/collections/public.geom_nodes.json')
+    .then(result => result.json())
+    .then(collectionInfo => {
+      const bbox = collectionInfo.extent.spatial.bbox
 
-  map.value.getView().setCenter([8.40064, 49.00939])
-  map.value.getView().setZoom(15)
+      map.value.getView().fit(bbox)
+
+      const coordinates = [
+        [
+          [bbox[0], bbox[1]], // bottom-left
+          [bbox[2], bbox[1]], // bottom-right
+          [bbox[2], bbox[3]], // top-right
+          [bbox[0], bbox[3]], // top-left
+          [bbox[0], bbox[1]]  // close the polygon
+        ]
+      ];
+
+      const bboxLayer = new VectorLayer({
+        source: new VectorSource({ features: [new Feature({ geometry: new Polygon(coordinates) })] }),
+        style: {
+          'stroke-color': 'gray',
+          'stroke-width': 3
+        }
+      })
+
+      map.value.addLayer(bboxLayer)
+
+
+    })
+
 })
 
 
