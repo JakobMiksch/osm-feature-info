@@ -4,12 +4,19 @@
       <select v-model="functionName" @change="triggerRequest()">
         <option v-for="name in functionNameOptions">{{ name }}</option>
       </select>
-      <p>Zoom Level: {{ zoom?.toFixed(2) }}</p>
+      <p :style="{
+        // @ts-ignore
+        color: zoom < minZoomForQuery ? 'red' : 'green'
+      }">Zoom Level: {{ zoom?.toFixed(2) }}</p>
       <p>Search Radius: {{ extractedSearchRadius }} meter</p>
       <p v-if="displayedFeatures.length > 0">{{ displayedFeatures.length }} features found</p>
 
       <div :style="{flex: 1, overflowY: 'auto'}">
         <p v-for="feature in displayedFeatures" :key="feature" :style="{marginLeft: '10px', marginRight: '10px'}">
+          <b>{{
+          // @ts-ignore
+          feature.geometry ? '' : 'No geometry, because outside of BBOX' }}
+          </b>
           {{ feature }}
         </p>
       </div>
@@ -36,6 +43,8 @@ import axios from 'axios'
 
 useGeographic()
 
+const minZoomForQuery = 14
+
 const { map, onMapClick, extent, zoom } = useOl()
 const displayedFeatures = ref([])
 const functionName = ref("")
@@ -43,6 +52,7 @@ const functionNameOptions = ref([])
 const clickedLatitude = ref(NaN)
 const clickedLongitude = ref(NaN)
 
+// @ts-ignore
 const extractedSearchRadius = computed(() => Math.round(10 * Math.pow(1.5, 19 - zoom.value)))
 
 const resultVectorSource = new VectorSource()
@@ -56,12 +66,14 @@ const reset = (() => {
 
 const triggerRequest = () => {
   const url = `http://localhost:9000/functions/${functionName.value}/items.json`
-  const minZoom = 14
-  if (zoom.value < minZoom) {
+  // @ts-ignore
+  if (zoom.value < minZoomForQuery) {
+    // @ts-ignore
     alert(`Zoom must be below ${minZoom}`)
     return
   }
 
+  // @ts-ignore
   const [min_lon, min_lat, max_lon, max_lat ] = extent.value
   const latitude = clickedLatitude.value
   const longitude = clickedLongitude.value
@@ -72,7 +84,7 @@ const triggerRequest = () => {
     .then(geojson => {
 
     const { features } = geojson
-    displayedFeatures.value = features.map((feature:any )=>feature?.properties ) // TODO: fix TS any
+    displayedFeatures.value = features
 
     const olFeatures = new GeoJSON().readFeatures(geojson) as any // TODO: fix TS anys
 
@@ -100,6 +112,7 @@ onMounted(() => {
   axios('http://localhost:9000/functions.json')
     .then(response => response.data)
     .then((functionsInfo) => {
+      // @ts-ignore
       functionNameOptions.value = functionsInfo.functions.map(item => item.id)
       functionName.value = functionNameOptions.value[0]
   })
@@ -137,6 +150,7 @@ onMounted(() => {
       const bbox = collectionInfo.extent.spatial.bbox
 
       map.value.getView().fit(bbox)
+      map.value.getView().setZoom(minZoomForQuery + 1)
 
       const coordinates = [
         [
