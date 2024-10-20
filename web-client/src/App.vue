@@ -34,10 +34,11 @@ import XYZ from 'ol/source/XYZ'
 import { Feature } from 'ol'
 import { Polygon, type Geometry } from 'ol/geom'
 import { extractRuntimeProps } from 'vue/compiler-sfc'
+import axios from 'axios'
 
 useGeographic()
 
-const { map, onMapClick  } = useOl()
+const { map, onMapClick } = useOl()
 const displayedFeatures = ref([])
 const distance = ref(10)
 const functionName = ref("")
@@ -53,12 +54,18 @@ const reset = (() => {
 })
 
 const triggerRequest = () => {
-  const url = `http://localhost:9000/functions/${functionName.value}/items.json?latitude=${clickedLatitude.value}&longitude=${clickedLongitude.value}&distance=${distance.value}`
-  fetch(url)
-  .then(async response =>response.json())
+  const url = `http://localhost:9000/functions/${functionName.value}/items.json`
+  axios(url, {
+    params: {
+      latitude: clickedLatitude.value,
+      longitude:     clickedLongitude.value,
+      distance: distance.value
+    }
+  })
+  .then(response => response.data)
   .then(geojson => {
 
-    const {features} = geojson
+    const { features } = geojson
     displayedFeatures.value = features.map((feature:any )=>feature?.properties ) // TODO: fix TS any
 
     const olFeatures = new GeoJSON().readFeatures(geojson) as any // TODO: fix TS anys
@@ -81,9 +88,11 @@ onMapClick((event) => {
 
 onMounted(() => {
 
-  fetch('http://localhost:9000/functions.json').then((response) => response.json()).then((data) => {
-    functionNameOptions.value = data.functions.map(item => item.id)
-    functionName.value = functionNameOptions.value[0]
+  axios('http://localhost:9000/functions.json')
+    .then(response => response.data)
+    .then((functionsInfo) => {
+      functionNameOptions.value = functionsInfo.functions.map(item => item.id)
+      functionName.value = functionNameOptions.value[0]
   })
 
   map.value.addLayer(
@@ -102,9 +111,11 @@ onMounted(() => {
       })
     )
 
-  fetch('http://localhost:9000/collections/public.geom_nodes.json')
-    .then(result => result.json())
+  axios('http://localhost:9000/collections/public.geom_nodes.json')
+    .then(response => response.data)
     .then(collectionInfo => {
+      console.log(collectionInfo);
+
       const bbox = collectionInfo.extent.spatial.bbox
 
       map.value.getView().fit(bbox)
