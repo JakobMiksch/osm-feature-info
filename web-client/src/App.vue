@@ -20,11 +20,10 @@
 </template>
 
 <script setup lang="ts">
-import { fromLonLat, useGeographic } from 'ol/proj'
+import {  useGeographic } from 'ol/proj'
 import { computed, onMounted, ref } from 'vue'
 import { useOl, OlMap } from 'vue-ol-comp'
 import TileLayer from 'ol/layer/Tile'
-import OSM from 'ol/source/OSM'
 import 'ol/ol.css'
 import VectorSource from 'ol/source/Vector'
 import VectorLayer from 'ol/layer/Vector'
@@ -32,7 +31,7 @@ import VectorLayer from 'ol/layer/Vector'
 import {GeoJSON} from "ol/format"
 import XYZ from 'ol/source/XYZ'
 import { Feature } from 'ol'
-import { Point, Polygon, type Geometry } from 'ol/geom'
+import { Point, Polygon } from 'ol/geom'
 import axios from 'axios'
 
 useGeographic()

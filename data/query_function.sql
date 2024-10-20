@@ -59,7 +59,6 @@ OR REPLACE FUNCTION postgisftw.osm_website_objects_enclosing (
     osm_type,
     osm_id,
     tags,
-    -- geog::geometry
     CASE
         WHEN NOT ST_Covers (
           ST_MakeEnvelope (min_lon, min_lat, max_lon, max_lat, 4326)::geography,
