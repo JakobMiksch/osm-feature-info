@@ -6,6 +6,7 @@
         <option v-for="name in functionNameOptions">{{ name }}</option>
       </select>
       <input id="distance_value" type="number" v-model="distance" @change="reset()" />
+      <p v-if="displayedFeatures.length > 0">{{ displayedFeatures.length }} features found</p>
 
       <div :style="{flex: 1, overflowY: 'auto'}">
         <p v-for="feature in displayedFeatures" :key="feature" :style="{marginLeft: '10px', marginRight: '10px'}">
