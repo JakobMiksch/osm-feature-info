@@ -5,7 +5,7 @@
       <select v-model="functionName" @change="triggerRequest()">
         <option v-for="name in functionNameOptions">{{ name }}</option>
       </select>
-      <input id="distance_value" type="number" v-model="distance" @change="triggerRequest()" />
+      <input id="distance_value" type="number" v-model="chosenDistance" @change="triggerRequest()" />
       <p v-if="displayedFeatures.length > 0">{{ displayedFeatures.length }} features found</p>
 
       <div :style="{flex: 1, overflowY: 'auto'}">
@@ -38,9 +38,9 @@ import axios from 'axios'
 
 useGeographic()
 
-const { map, onMapClick } = useOl()
+const { map, onMapClick, extent } = useOl()
 const displayedFeatures = ref([])
-const distance = ref(10)
+const chosenDistance = ref(10)
 const functionName = ref("")
 const functionNameOptions = ref([])
 const clickedLatitude = ref(NaN)
@@ -55,15 +55,15 @@ const reset = (() => {
 
 const triggerRequest = () => {
   const url = `http://localhost:9000/functions/${functionName.value}/items.json`
-  axios(url, {
-    params: {
-      latitude: clickedLatitude.value,
-      longitude:     clickedLongitude.value,
-      distance: distance.value
-    }
-  })
+
+  const [min_lon, min_lat, max_lon, max_lat ] = extent.value
+  const latitude = clickedLatitude.value
+  const longitude = clickedLongitude.value
+  const distance = chosenDistance.value
+
+  axios(url, { params: { latitude, longitude, distance, min_lon, min_lat, max_lon, max_lat  }  })
   .then(response => response.data)
-  .then(geojson => {
+    .then(geojson => {
 
     const { features } = geojson
     displayedFeatures.value = features.map((feature:any )=>feature?.properties ) // TODO: fix TS any

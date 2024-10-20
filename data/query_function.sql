@@ -35,7 +35,7 @@ OR REPLACE FUNCTION postgisftw.osm_website_clone (
       JOIN raw_rels AS r ON gr.osm_id = r.id
   ) AS osm_objects
   WHERE ST_DWithin(geog, ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography, distance)
-  AND ST_Covers(geog, ST_MakeEnvelope(min_lon, min_lat, max_lon, max_lat, 4326)::geography)
+  AND ST_Covers(ST_MakeEnvelope(min_lon, min_lat, max_lon, max_lat, 4326)::geography, geog)
 $$ LANGUAGE sql STABLE PARALLEL SAFE;
 
 DROP FUNCTION IF EXISTS postgisftw.osm_feature_info_geog;
