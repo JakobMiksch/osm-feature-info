@@ -17,6 +17,7 @@ services:
     environment:
       - DATABASE_URL=postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}/${PGDATABASE}
       - PGFS_WEBSITE_BASEMAPURL=https://tile.openstreetmap.de/{z}/{x}/{y}.png
+      - PGFS_PAGING_LIMITDEFAULT=100
     depends_on:
       postgres:
         condition: service_healthy
