@@ -1,3 +1,6 @@
 [submodule "pg_featureserv"]
 	path = pg_featureserv
 	url = https://github.com/JakobMiksch/pg_featureserv.git
+[submodule "osm2pgsql-themepark"]
+	path = osm2pgsql-themepark
+	url = https://github.com/osm2pgsql-dev/osm2pgsql-themepark.git
