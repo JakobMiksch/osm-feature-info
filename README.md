@@ -40,6 +40,8 @@ docker compose exec postgres psql -f data/post_process_tables.sql
 docker compose exec postgres psql -f /data/query_function.sql
 ```
 
+Demo client on <http://localhost:4173/>
+
 ## Request API
 
 Request the API with your browser or any other tool:
