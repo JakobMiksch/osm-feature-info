@@ -52,8 +52,10 @@ services:
       - PGDATABASE
       - PGUSER
       - PGPASSWORD
+      - LUA_PATH=/osm2pgsql-themepark/lua/?.lua;;
     volumes:
       - ./data:/data
+      - ./osm2pgsql-themepark:/osm2pgsql-themepark
     command: exit
     depends_on:
       postgres:

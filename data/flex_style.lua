@@ -1,3 +1,7 @@
+local themepark = require('themepark')
+
+themepark:set_option('srid', 4326)
+
 local function has_area_tags(tags)
     if tags.area == 'yes' then
         return true
@@ -35,90 +39,81 @@ local function has_area_tags(tags)
         or tags['building:part']
 end
 
-
-local geom_nodes = osm2pgsql.define_table({
+themepark:add_table{
     name = 'geom_nodes',
-    ids = { type = 'any', type_column = 'osm_type', id_column = 'osm_id' },
-    columns = {
-        { column = 'geom_3857', type = 'point', not_null = true },
-        { column = 'geom_4326', type = 'point', projection = '4326', not_null = true }
+    geom = 'point',
+    ids = {
+        type = 'any',
+        type_column = 'osm_type',
+        id_column = 'osm_id'
     },
-    indexes = {
-        { column = 'geom_3857',  method = 'gist' },
-        { column = 'geom_4326',  method = 'gist' }
-    }
-})
+    tiles = false
+}
 
-function osm2pgsql.process_node(object)
-    geom_nodes:insert({
-        geom_3857 = object:as_point(),
-        geom_4326 = object:as_point()
-    })
-end
+themepark:add_proc('node', function(object, data)
+    themepark:insert('geom_nodes', {
+        geom = object:as_point()
+    }, object.tags)
+end)
 
-local geom_ways = osm2pgsql.define_table({
+themepark:add_table{
     name = 'geom_ways',
-    ids = { type = 'any', type_column = 'osm_type', id_column = 'osm_id' },
-    columns = {
-        { column = 'geom_3857', type = 'geometry', not_null = true },
-        { column = 'geom_4326', type = 'geometry', projection = '4326', not_null = true }
+    geom = 'geometry',
+    ids = {
+        type = 'any',
+        type_column = 'osm_type',
+        id_column = 'osm_id'
     },
-    indexes = {
-        { column = 'geom_3857',  method = 'gist' },
-        { column = 'geom_4326',  method = 'gist' }
-    }
-})
+    tiles = false
+}
 
-function osm2pgsql.process_way(object)
+themepark:add_proc('way', function(object, data)
+
+    attributes = {}
     if object.is_closed and has_area_tags(object.tags) then
-        geom_ways:insert({
-            geom_3857 = object:as_polygon(),
-            geom_4326 = object:as_polygon()
-        })
+        attributes = {
+            geom = object:as_polygon()
+        }
     else
-        geom_ways:insert({
-            geom_3857 = object:as_linestring(),
-            geom_4326 = object:as_linestring()
-        })
+        attributes = {
+            geom = object:as_linestring()
+        }
     end
-end
 
-local geom_rels = osm2pgsql.define_table({
+    themepark:insert('geom_ways', attributes, object.tags)
+end)
+
+themepark:add_table{
     name = 'geom_rels',
-    ids = { type = 'any', type_column = 'osm_type', id_column = 'osm_id' },
-    columns = {
-        { column = 'geom_3857', type = 'geometry', not_null = true },
-        { column = 'geom_4326', type = 'geometry', projection = '4326', not_null = true }
+    geom = 'geometry',
+    ids = {
+        type = 'any',
+        type_column = 'osm_type',
+        id_column = 'osm_id'
     },
-    indexes = {
-        { column = 'geom_3857',  method = 'gist' },
-        { column = 'geom_4326',  method = 'gist' }
-    }
-})
+    tiles = false
+}
 
-function osm2pgsql.process_relation(object)
+themepark:add_proc('relation', function(object, data)
     local relation_type = object:grab_tag('type')
 
     if relation_type == 'route' then
-        geom_rels:insert({
-            geom_3857 = object:as_multilinestring(),
-            geom_4326 = object:as_multilinestring()
-        })
+        themepark:insert('geom_rels', {
+            geom = object:as_multilinestring()
+        }, object.tags)
         return
     end
 
     if relation_type == 'boundary' or (relation_type == 'multipolygon' and object.tags.boundary) then
-        geom_rels:insert({
-            geom_3857 = object:as_multilinestring():line_merge(),
-            geom_4326 = object:as_multilinestring():line_merge()
-        })
+        themepark:insert('geom_rels', {
+            geom = object:as_multilinestring():line_merge()
+        }, object.tags)
         return
     end
 
     if relation_type == 'multipolygon' then
-        geom_rels:insert({
-            geom_3857 = object:as_multipolygon(),
-            geom_4326 = object:as_multipolygon()
-        })
+        themepark:insert('geom_rels', {
+            geom = object:as_multipolygon()
+        }, object.tags)
     end
-end
+end)
