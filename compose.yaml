@@ -61,7 +61,7 @@ services:
   web-client:
     build: ./web-client
     ports:
-      - "80:4173"
+      - "4173:4173"
 
 volumes:
   osm_pg_featureserv_db_data:
