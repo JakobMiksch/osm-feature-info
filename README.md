@@ -33,9 +33,6 @@ docker compose run --rm osm2pgsql \
   --prefix=raw \
   /data/sample.pbf
 
-# post-process import
-docker compose exec postgres psql -f data/post_process_tables.sql
-
 # add function to DB
 docker compose exec postgres psql -f /data/query_function.sql
 ```
