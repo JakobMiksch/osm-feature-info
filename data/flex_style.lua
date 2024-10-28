@@ -35,65 +35,70 @@ local function has_area_tags(tags)
         or tags['building:part']
 end
 
-
 local geom_nodes = osm2pgsql.define_table({
     name = 'geom_nodes',
-    ids = { type = 'any', type_column = 'osm_type', id_column = 'osm_id' },
-    columns = {
-        { column = 'geom_3857', type = 'point', not_null = true },
-        { column = 'geom_4326', type = 'point', projection = '4326', not_null = true }
+    ids = {
+        type = 'any',
+        type_column = 'osm_type',
+        id_column = 'osm_id'
     },
-    indexes = {
-        { column = 'geom_3857',  method = 'gist' },
-        { column = 'geom_4326',  method = 'gist' }
-    }
+    columns = {{
+        column = 'geog',
+        type = 'point',
+        projection = '4326',
+        not_null = true,
+        sql_type = 'geography(point)'
+    }}
 })
 
 function osm2pgsql.process_node(object)
     geom_nodes:insert({
-        geom_3857 = object:as_point(),
-        geom_4326 = object:as_point()
+        geog = object:as_point()
     })
 end
 
 local geom_ways = osm2pgsql.define_table({
     name = 'geom_ways',
-    ids = { type = 'any', type_column = 'osm_type', id_column = 'osm_id' },
-    columns = {
-        { column = 'geom_3857', type = 'geometry', not_null = true },
-        { column = 'geom_4326', type = 'geometry', projection = '4326', not_null = true }
+    ids = {
+        type = 'any',
+        type_column = 'osm_type',
+        id_column = 'osm_id'
     },
-    indexes = {
-        { column = 'geom_3857',  method = 'gist' },
-        { column = 'geom_4326',  method = 'gist' }
-    }
+    columns = {{
+        column = 'geog',
+        type = 'geometry',
+        projection = '4326',
+        not_null = true,
+        sql_type = 'geography(geometry)'
+    }}
 })
 
 function osm2pgsql.process_way(object)
     if object.is_closed and has_area_tags(object.tags) then
         geom_ways:insert({
-            geom_3857 = object:as_polygon(),
-            geom_4326 = object:as_polygon()
+            geog = object:as_polygon()
         })
     else
         geom_ways:insert({
-            geom_3857 = object:as_linestring(),
-            geom_4326 = object:as_linestring()
+            geog = object:as_linestring()
         })
     end
 end
 
 local geom_rels = osm2pgsql.define_table({
     name = 'geom_rels',
-    ids = { type = 'any', type_column = 'osm_type', id_column = 'osm_id' },
-    columns = {
-        { column = 'geom_3857', type = 'geometry', not_null = true },
-        { column = 'geom_4326', type = 'geometry', projection = '4326', not_null = true }
+    ids = {
+        type = 'any',
+        type_column = 'osm_type',
+        id_column = 'osm_id'
     },
-    indexes = {
-        { column = 'geom_3857',  method = 'gist' },
-        { column = 'geom_4326',  method = 'gist' }
-    }
+    columns = {{
+        column = 'geog',
+        type = 'geometry',
+        projection = '4326',
+        not_null = true,
+        sql_type = 'geography(geometry)'
+    }}
 })
 
 function osm2pgsql.process_relation(object)
@@ -101,24 +106,21 @@ function osm2pgsql.process_relation(object)
 
     if relation_type == 'route' then
         geom_rels:insert({
-            geom_3857 = object:as_multilinestring(),
-            geom_4326 = object:as_multilinestring()
+            geog = object:as_multilinestring()
         })
         return
     end
 
     if relation_type == 'boundary' or (relation_type == 'multipolygon' and object.tags.boundary) then
         geom_rels:insert({
-            geom_3857 = object:as_multilinestring():line_merge(),
-            geom_4326 = object:as_multilinestring():line_merge()
+            geog = object:as_multilinestring():line_merge()
         })
         return
     end
 
     if relation_type == 'multipolygon' then
         geom_rels:insert({
-            geom_3857 = object:as_multipolygon(),
-            geom_4326 = object:as_multipolygon()
+            geog = object:as_multipolygon()
         })
     end
 end
