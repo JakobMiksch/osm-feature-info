@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import {  useGeographic } from 'ol/proj'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useOl, OlMap } from 'vue-ol-comp'
 import TileLayer from 'ol/layer/Tile'
 import 'ol/ol.css'
@@ -45,7 +45,7 @@ useGeographic()
 
 const minZoomForQuery = 14
 
-const { map, onMapClick, extent, zoom } = useOl()
+const { map, onMapClick, extent, zoom, pointerCoordinate } = useOl()
 const displayedFeatures = ref([])
 const functionName = ref("")
 const functionNameOptions = ref<string[]>()
@@ -62,6 +62,15 @@ const reset = (() => {
   displayedFeatures.value = []
   resultVectorSource.clear()
   pointDataSource.clear()
+})
+
+watch(pointerCoordinate, () => {
+
+  clickedLongitude.value = pointerCoordinate.value[0]
+  clickedLatitude.value = pointerCoordinate.value[1]
+
+  triggerRequest()
+
 })
 
 const triggerRequest = () => {
