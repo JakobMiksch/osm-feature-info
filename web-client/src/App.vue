@@ -150,8 +150,6 @@ onMounted(() => {
   axios('http://localhost:9000/collections/public.geom_nodes.json')
     .then(response => response.data)
     .then(collectionInfo => {
-      console.log(collectionInfo);
-
       const bbox = collectionInfo.extent.spatial.bbox
 
       map.value.getView().fit(bbox)
