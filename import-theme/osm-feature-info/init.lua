@@ -1,6 +1,4 @@
-local themepark = ...
 local theme = {}
-
 
 function theme.has_area_tags(tags)
     if tags.area == 'yes' then
