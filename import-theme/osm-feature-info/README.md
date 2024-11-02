@@ -1,3 +1,3 @@
 # OSM Feature Info
 
-Theme for building a feature info tool.
+Thempark theme for building a OSM-based feature info tool.
