@@ -37,7 +37,22 @@ docker compose run --rm osm2pgsql \
 docker compose exec postgres psql -f /data/query_function.sql
 ```
 
-Demo client on <http://localhost:4173/>
+Demo client can be accessed via <http://localhost:4173/>.
+
+Replication can be executed like this:
+
+```shell
+# replication init
+docker compose run --rm osm2pgsql replication init \
+ --verbose \
+ --prefix=raw \
+ --osm-file=/data/sample.pbf
+
+# replication update
+docker compose run --rm osm2pgsql replication update \
+  --prefix=raw \
+  --verbose
+```
 
 ## Request API
 
