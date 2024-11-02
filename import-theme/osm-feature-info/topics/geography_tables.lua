@@ -1,4 +1,4 @@
-local themepark, theme, cfg = ...
+local themepark, theme = ...
 
 themepark:set_option('srid', 4326)
 
@@ -24,7 +24,7 @@ themepark:add_table{
     tiles = false
 }
 
-themepark:add_proc('node', function(object, data)
+themepark:add_proc('node', function(object)
     themepark:insert('geom_nodes', {
         geog = object:as_point()
     }, object.tags)
@@ -51,9 +51,9 @@ themepark:add_table{
     tiles = false
 }
 
-themepark:add_proc('way', function(object, data)
+themepark:add_proc('way', function(object)
 
-    attributes = {}
+    local attributes
     if object.is_closed and theme.has_area_tags(object.tags) then
         attributes = {
             geog = object:as_polygon()
@@ -87,7 +87,7 @@ themepark:add_table{
     }},
     tiles = false
 }
-themepark:add_proc('relation', function(object, data)
+themepark:add_proc('relation', function(object)
     local relation_type = object:grab_tag('type')
     local geog
 
