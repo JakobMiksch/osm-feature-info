@@ -46,16 +46,15 @@ services:
       retries: 5
 
   osm2pgsql:
-    image: iboates/osm2pgsql:2.0.0
+    build: ./docker/osm2pgsql
     environment:
       - PGHOST
       - PGDATABASE
       - PGUSER
       - PGPASSWORD
-      - LUA_PATH=/osm2pgsql-themepark/lua/?.lua;;
     volumes:
       - ./data:/data
-      - ./osm2pgsql-themepark:/osm2pgsql-themepark
+      - ./import-theme/osm-feature-info:/osm2pgsql-themepark/themes/osm-feature-info
     command: exit
     depends_on:
       postgres:
