@@ -17,7 +17,7 @@ git clone --recursive https://github.com/JakobMiksch/osm_feature_info.git
 git submodule update --init
 
 # download sample data
-wget -O data/sample.pbf https://download.geofabrik.de/europe/germany/bremen-latest.osm.pbf
+wget -O data/sample.pbf https://download.geofabrik.de/europe/andorra-latest.osm.pbf
 
 # [optional] shut down existing compose stack if existing
 docker compose down --volumes --remove-orphans
