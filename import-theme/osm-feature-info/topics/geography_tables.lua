@@ -1,5 +1,9 @@
 local themepark, theme = ...
 
+-- reuse function from other theme
+themepark:init_theme('basic')
+has_area_tags = themepark.themes['basic'].has_area_tags
+
 themepark:set_option('srid', 4326)
 
 themepark:add_table{
@@ -54,7 +58,7 @@ themepark:add_table{
 themepark:add_proc('way', function(object)
 
     local attributes
-    if object.is_closed and theme.has_area_tags(object.tags) then
+    if object.is_closed and has_area_tags(object.tags) then
         attributes = {
             geog = object:as_polygon()
         }
