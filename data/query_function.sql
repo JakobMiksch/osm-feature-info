@@ -35,7 +35,7 @@ OR REPLACE FUNCTION postgisftw.osm_website_objects_around (
 ) AS $$
     SELECT osm_type, osm_id, tags, geog::geometry FROM view_objects
   WHERE ST_DWithin(geog, ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography, radius)
-  AND not ST_Intersects(geog, ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography)
+  AND NOT ST_Intersects(geog, ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography)
   AND ST_Covers(ST_MakeEnvelope(min_lon, min_lat, max_lon, max_lat, 4326)::geography, geog)
 $$ LANGUAGE sql STABLE PARALLEL SAFE;
 
