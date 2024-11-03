@@ -147,10 +147,11 @@ onMounted(() => {
       }),
     )
 
-  axios('http://localhost:9000/collections/public.geom_nodes.json')
+  axios('http://localhost:9000/collections.json')
     .then(response => response.data)
     .then(collectionInfo => {
-      const bbox = collectionInfo.extent.spatial.bbox
+      const firstCollection = collectionInfo.collections[0]
+      const bbox = firstCollection.extent.spatial.bbox
 
       map.value.getView().fit(bbox)
       map.value.getView().setZoom(minZoomForQuery + 1)

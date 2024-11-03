@@ -1,5 +1,21 @@
 CREATE SCHEMA IF NOT EXISTS postgisftw;
 
+CREATE VIEW
+  view_objects AS
+SELECT
+  g.osm_type,
+  g.osm_id,
+  r.tags,
+  g.geog AS geog
+FROM
+  geometries AS g
+  LEFT JOIN raw_nodes AS n ON g.osm_id = n.id
+  AND g.osm_type = 'N'
+  LEFT JOIN raw_ways AS w ON g.osm_id = w.id
+  AND g.osm_type = 'W'
+  LEFT JOIN raw_rels AS r ON g.osm_id = r.id
+  AND g.osm_type = 'R';
+
 DROP FUNCTION IF EXISTS postgisftw.osm_website_objects_around;
 
 CREATE
@@ -17,23 +33,7 @@ OR REPLACE FUNCTION postgisftw.osm_website_objects_around (
   tags jsonb,
   geom geometry
 ) AS $$
-    SELECT osm_type, osm_id, tags, geog::geometry FROM (
-      SELECT gn.osm_type, gn.osm_id, r.tags, gn.geog AS geog
-      FROM geom_nodes AS gn
-      JOIN raw_nodes AS r ON gn.osm_id = r.id
-
-      UNION
-
-      SELECT gw.osm_type, gw.osm_id, r.tags, gw.geog  AS geog
-      FROM geom_ways AS gw
-      JOIN raw_ways AS r ON gw.osm_id = r.id
-
-      UNION
-
-      SELECT gr.osm_type, gr.osm_id, r.tags, gr.geog AS geog
-      FROM geom_rels AS gr
-      JOIN raw_rels AS r ON gr.osm_id = r.id
-  ) AS osm_objects
+    SELECT osm_type, osm_id, tags, geog::geometry FROM view_objects
   WHERE ST_DWithin(geog, ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography, radius)
   AND not ST_Intersects(geog, ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography)
   AND ST_Covers(ST_MakeEnvelope(min_lon, min_lat, max_lon, max_lat, 4326)::geography, geog)
@@ -66,17 +66,7 @@ OR REPLACE FUNCTION postgisftw.osm_website_objects_enclosing (
         ) THEN NULL::geometry
         ELSE geog::geometry
     END AS geog
-    FROM (
-      SELECT gw.osm_type, gw.osm_id, r.tags, gw.geog  AS geog
-      FROM geom_ways AS gw
-      JOIN raw_ways AS r ON gw.osm_id = r.id
-
-      UNION
-
-      SELECT gr.osm_type, gr.osm_id, r.tags, gr.geog AS geog
-      FROM geom_rels AS gr
-      JOIN raw_rels AS r ON gr.osm_id = r.id
-  ) AS osm_objects
+    FROM view_objects
   WHERE ST_Covers(geog, ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography)
 $$ LANGUAGE sql STABLE PARALLEL SAFE;
 
