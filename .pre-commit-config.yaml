@@ -13,3 +13,10 @@ repos:
       - id: check-xml
       - id: detect-private-key
       - id: mixed-line-ending
+  - repo: local
+    hooks:
+      - id: lua-check
+        name: lua-check
+        entry: luacheck import-theme/
+        language: system
+        pass_filenames: false
