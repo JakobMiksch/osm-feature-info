@@ -7,35 +7,7 @@ local has_area_tags = themepark.themes['basic'].has_area_tags
 themepark:set_option('srid', 4326)
 
 themepark:add_table{
-    name = 'geom_nodes',
-    geog = 'point',
-    ids = {
-        type = 'any',
-        type_column = 'osm_type',
-        id_column = 'osm_id'
-    },
-    columns = {{
-        column = 'geog',
-        type = 'point',
-        projection = '4326',
-        not_null = true,
-        sql_type = 'geography(point)'
-    }},
-    indexes = {{
-        column = 'geog',
-        method = 'gist'
-    }},
-    tiles = false
-}
-
-themepark:add_proc('node', function(object)
-    themepark:insert('geom_nodes', {
-        geog = object:as_point()
-    }, object.tags)
-end)
-
-themepark:add_table{
-    name = 'geom_ways',
+    name = 'geometries',
     ids = {
         type = 'any',
         type_column = 'osm_type',
@@ -54,6 +26,13 @@ themepark:add_table{
     }},
     tiles = false
 }
+
+themepark:add_proc('node', function(object)
+    themepark:insert('geometries', {
+        geog = object:as_point()
+    }, object.tags)
+end)
+
 
 themepark:add_proc('way', function(object)
 
@@ -68,29 +47,9 @@ themepark:add_proc('way', function(object)
         }
     end
 
-    themepark:insert('geom_ways', attributes, object.tags)
+    themepark:insert('geometries', attributes, object.tags)
 end)
 
-themepark:add_table{
-    name = 'geom_rels',
-    ids = {
-        type = 'any',
-        type_column = 'osm_type',
-        id_column = 'osm_id'
-    },
-    columns = {{
-        column = 'geog',
-        type = 'geometry',
-        projection = '4326',
-        not_null = true,
-        sql_type = 'geography(geometry)'
-    }},
-    indexes = {{
-        column = 'geog',
-        method = 'gist'
-    }},
-    tiles = false
-}
 themepark:add_proc('relation', function(object)
     local relation_type = object:grab_tag('type')
     local geog
@@ -104,7 +63,7 @@ themepark:add_proc('relation', function(object)
     end
 
     if geog then
-        themepark:insert('geom_rels', {
+        themepark:insert('geometries', {
             geog = geog
         }, object.tags)
     end
