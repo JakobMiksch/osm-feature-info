@@ -8,7 +8,6 @@ themepark:set_option('srid', 4326)
 
 themepark:add_table{
     name = 'geom_nodes',
-    geog = 'point',
     ids = {
         type = 'any',
         type_column = 'osm_type',
