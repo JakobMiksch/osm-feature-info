@@ -14,7 +14,7 @@ wget -O data/sample.pbf https://download.geofabrik.de/europe/andorra-latest.osm.
 docker compose down --volumes --remove-orphans
 
 # start services
-docker compose up -d
+docker compose up -d --build
 
 # load data into db
 docker compose run --rm osm2pgsql \
