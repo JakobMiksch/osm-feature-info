@@ -1,11 +1,16 @@
 CREATE SCHEMA IF NOT EXISTS postgisftw;
 
-CREATE VIEW
+CREATE OR REPLACE VIEW
   view_objects AS
 SELECT
   g.osm_type,
   g.osm_id,
-  r.tags,
+  CASE
+    WHEN g.osm_type = 'N' then n.tags
+    WHEN g.osm_type = 'W' then w.tags
+    WHEN g.osm_type = 'R' then r.tags
+    ELSE NULL
+  END as tags,
   g.geog AS geog
 FROM
   geometries AS g
