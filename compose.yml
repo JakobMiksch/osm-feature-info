@@ -1,17 +1,7 @@
 services:
 
   pg_featureserv:
-    build:
-      context: ./pg_featureserv
-      args:
-        - GOLANG_VERSION=1.21.6
-        - TARGETARCH=amd64
-        - BASE_REGISTRY=registry.access.redhat.com
-        - BASE_IMAGE=ubi8-micro
-        - PLATFORM=amd64
-        - VERSION=0.999
-        - BUILDTYPE
-      target: multi-stage
+    image: pramsey/pg_featureserv:20241104
     ports:
       - "9000:9000"
     environment:
