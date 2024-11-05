@@ -32,8 +32,6 @@ services:
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready"]
       interval: 10s
-      timeout: 5s
-      retries: 5
 
   osm2pgsql:
     build: ./docker/osm2pgsql
@@ -55,5 +53,3 @@ services:
     ports:
       - "4173:4173"
 
-volumes:
-  osm_pg_featureserv_db_data:
