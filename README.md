@@ -7,15 +7,6 @@ Attempt to create an API to get information about OSM features around a location
 Tested on Linux and WSL:
 
 ```sh
-# when cloning the first time
-# SSH version
-git clone --recursive git@github.com:JakobMiksch/osm_feature_info.git
-# HTTPS version
-git clone --recursive https://github.com/JakobMiksch/osm_feature_info.git
-
-# if case you forgot to use the "--recursive" flag
-git submodule update --init
-
 # download sample data (or use your own)
 wget -O data/sample.pbf https://download.geofabrik.de/europe/andorra-latest.osm.pbf
 
@@ -56,7 +47,4 @@ docker compose run --rm osm2pgsql replication update \
 
 ## Request API
 
-Request the API with your browser or any other tool:
-
-- **HTML**: <http://localhost:9000/functions/postgisftw.osm_feature_info/items.html?latitude=53.112&longitude=8.755&distance=50&limit=10000>
-- **JSON**: <http://localhost:9000/functions/postgisftw.osm_feature_info/items.json?latitude=53.112&longitude=8.755&distance=50&limit=10000>
+Request the API with your browser or any other tool <http://localhost:9000/functions/postgisftw.osm_website_combi/items.json?latitude=42.533888&longitude=1.5929665&radius=35&min_lon=1.590091&min_lat=42.526629&max_lon=1.607210&max_lat=42.53863>

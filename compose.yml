@@ -1,17 +1,7 @@
 services:
 
   pg_featureserv:
-    build:
-      context: ./pg_featureserv
-      args:
-        - GOLANG_VERSION=1.21.6
-        - TARGETARCH=amd64
-        - BASE_REGISTRY=registry.access.redhat.com
-        - BASE_IMAGE=ubi8-micro
-        - PLATFORM=amd64
-        - VERSION=0.999
-        - BUILDTYPE
-      target: multi-stage
+    image: pramsey/pg_featureserv:20241104
     ports:
       - "9000:9000"
     environment:
@@ -40,10 +30,8 @@ services:
       - PGUSER
       - PGPASSWORD
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready"]
+      test: [ "CMD-SHELL", "pg_isready" ]
       interval: 10s
-      timeout: 5s
-      retries: 5
 
   osm2pgsql:
     build: ./docker/osm2pgsql
@@ -64,6 +52,3 @@ services:
     build: ./web-client
     ports:
       - "4173:4173"
-
-volumes:
-  osm_pg_featureserv_db_data:
