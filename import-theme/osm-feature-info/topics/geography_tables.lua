@@ -90,6 +90,7 @@ themepark:add_table{
     }},
     tiles = false
 }
+
 themepark:add_proc('relation', function(object)
     local relation_type = object:grab_tag('type')
     local geog
