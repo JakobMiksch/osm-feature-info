@@ -1,4 +1,4 @@
-local themepark = ...
+local themepark, theme = ...
 
 -- reuse function from other theme
 themepark:init_theme('basic')
@@ -28,6 +28,10 @@ themepark:add_table{
 }
 
 themepark:add_proc('node', function(object)
+    if theme.clean_tags(object.tags) then
+        return
+    end
+
     themepark:insert('geometries', {
         geog = object:as_point()
     }, object.tags)
@@ -35,6 +39,10 @@ end)
 
 
 themepark:add_proc('way', function(object)
+    if theme.clean_tags(object.tags) then
+        return
+    end
+
     local attributes
     if object.is_closed and has_area_tags(object.tags) then
         attributes = {
@@ -50,6 +58,10 @@ themepark:add_proc('way', function(object)
 end)
 
 themepark:add_proc('relation', function(object)
+    if theme.clean_tags(object.tags) then
+        return
+    end
+
     local relation_type = object:grab_tag('type')
     local geog
 
