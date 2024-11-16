@@ -147,7 +147,7 @@ onMounted(() => {
       }),
     )
 
-  axios('http://localhost:9000/collections/public.geom_nodes.json')
+  axios('http://localhost:9000/collections/public.geometries.json')
     .then(response => response.data)
     .then(collectionInfo => {
       const bbox = collectionInfo.extent.spatial.bbox
@@ -174,10 +174,7 @@ onMounted(() => {
       })
 
       map.value.addLayer(bboxLayer)
-
-
     })
-
 })
 
 
