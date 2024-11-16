@@ -35,7 +35,6 @@ end)
 
 
 themepark:add_proc('way', function(object)
-
     local attributes
     if object.is_closed and has_area_tags(object.tags) then
         attributes = {

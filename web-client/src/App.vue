@@ -147,11 +147,10 @@ onMounted(() => {
       }),
     )
 
-  axios('http://localhost:9000/collections.json')
+  axios('http://localhost:9000/collections/public.geometries.json')
     .then(response => response.data)
     .then(collectionInfo => {
-      const firstCollection = collectionInfo.collections[0]
-      const bbox = firstCollection.extent.spatial.bbox
+      const bbox = collectionInfo.extent.spatial.bbox
 
       map.value.getView().fit(bbox)
       map.value.getView().setZoom(minZoomForQuery + 1)
@@ -175,10 +174,7 @@ onMounted(() => {
       })
 
       map.value.addLayer(bboxLayer)
-
-
     })
-
 })
 
 
