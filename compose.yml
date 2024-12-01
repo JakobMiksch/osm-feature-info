@@ -1,5 +1,4 @@
 services:
-
   pg_featureserv:
     image: pramsey/pg_featureserv:20241104
     ports:
@@ -30,7 +29,7 @@ services:
       - PGUSER
       - PGPASSWORD
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready" ]
+      test: ["CMD-SHELL", "pg_isready"]
       interval: 10s
 
   osm2pgsql:
@@ -42,7 +41,7 @@ services:
       - PGPASSWORD
     volumes:
       - ./data:/data
-      - ./import-theme/osm-feature-info:/osm2pgsql-themepark/themes/osm-feature-info
+      - ./import-theme/:/opt/import-theme/
     command: exit
     depends_on:
       postgres:
