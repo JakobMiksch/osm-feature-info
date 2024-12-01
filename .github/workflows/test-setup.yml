@@ -34,15 +34,20 @@ jobs:
               with:
                 repository: osm2pgsql-dev/osm2pgsql
                 ref: 2.0.0 
-                path: /home/runner/work/osm2pgsql
+                path: /home/runner/work/osm-feature-info/osm-feature-info/osm2pgsql
 
             - name: Checkout themepark
               uses: actions/checkout@v3
               with:
                 repository: osm2pgsql-dev/osm2pgsql-themepark
                 path: /home/runner/work/osm-feature-info/osm-feature-info/osm2pgsql-themepark
-              
+
+            - name: Checkout pg_featureserv
+              uses: actions/checkout@v3
+              with:
+                repository: CrunchyData/pg_featureserv
+                path: /home/runner/work/osm-feature-info/osm-feature-info/pg_featureserv             
             
             - run: pwd
             - run: ls
-            - run: ls ..
+
