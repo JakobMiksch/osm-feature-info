@@ -26,3 +26,13 @@ jobs:
             - name: Run SQL commands
               run: |
                 PGPASSWORD=mypassword psql -h localhost -U myuser -d mydatabase -c "SELECT 'Hello, PostgreSQL!' AS greeting;"
+
+            - name: Checkout repository at a specific tag
+              uses: actions/checkout@v3
+              with:
+                repository: osm2pgsql-dev/osm2pgsql
+                ref: 2.0.0   
+            
+            - run: pwd
+            - run: ls
+            
