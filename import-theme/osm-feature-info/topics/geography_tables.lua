@@ -3,9 +3,6 @@ local themepark = ...
 -- reuse function from other theme
 local has_area_tags = themepark:init_theme('basic').has_area_tags
 
-
-themepark:set_option('srid', 4326)
-
 themepark:add_table{
     name = 'geometries',
     ids = {
