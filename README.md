@@ -12,14 +12,14 @@ Tested on Debian/Ubuntu systems.
 2. Install [osm2pgsql](https://osm2pgsql.org/) with minimal version `2.0.0`
 3. Setup Themepark
 
-    - clone the repo in a location of your choice: (<https://github.com/osm2pgsql-dev/osm2pgsql-themepark>)
+    - clone the [Themepark repo](https://github.com/osm2pgsql-dev/osm2pgsql-themepark) into a location of your choice
     - in your shell link the Themepark via this environment variable:
 
     ```shell
     export LUA_PATH="YOUR_PATH_TO/osm2pgsql-themepark/lua/?.lua;;"
     ```
 
-4. Import an OSM extract:
+4. Import an OSM extract into the database:
 
     ```shell
     # set database connection
@@ -75,12 +75,12 @@ Tested on Debian/Ubuntu systems.
 
 ### Using Docker
 
-Ensure you have docker installed. See [official instructions](https://docs.docker.com/engine/install/debian/).
+Ensure you have Docker installed. See [official instructions](https://docs.docker.com/engine/install/debian/).
 
 **Note:** Depending on you installation the docker commands are differently:
 
 - it might be necessary that you have to add `sudo` before your docker commmands
-- Docker Compose can either be called by using `docker-compose` or `docker compose` (either with `-` or whitespace). It is depending on your installation.
+- Docker Compose can either be called by using `docker-compose` or `docker compose` (either with `-`(hyphen) or whitespace). It depends on your installation.
 
 ```shell
 # download sample data (or use your own)
