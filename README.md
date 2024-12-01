@@ -39,7 +39,7 @@ Tested on Debian/Ubuntu systems.
     ./PATH_TO_YOUR/OSM_EXTRACT.pbf
     ```
 
-5. Apply the feature info SQLfunction:
+5. Apply the SQL-function that queries the OSM features around a location:
 
     ```shell
     # use the same environment variables as above
