@@ -33,7 +33,7 @@ services:
       interval: 10s
 
   osm2pgsql:
-    build: ./docker/osm2pgsql
+    build: ./docker-osm2pgsql
     environment:
       - PGHOST
       - PGDATABASE
@@ -41,7 +41,6 @@ services:
       - PGPASSWORD
     volumes:
       - ./data:/data
-      - ./import-theme/:/opt/import-theme/
     command: exit
     depends_on:
       postgres:
