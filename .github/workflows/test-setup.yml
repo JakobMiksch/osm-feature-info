@@ -9,30 +9,31 @@ jobs:
         name: Run npm on Ubuntu
         runs-on: ubuntu-24.04
         steps:
-            - name: Install packages
-              run: |
-                sudo apt-get update
-                sudo apt-get install -y postgresql wait-for-it
+            # - name: Install packages
+            #   run: |
+            #     sudo apt-get update
+            #     sudo apt-get install -y postgresql wait-for-it
 
-            - name: Start PostgreSQL service
-              run: |
-                sudo service postgresql start
-                sudo -u postgres psql -c "CREATE USER myuser WITH PASSWORD 'mypassword';"
-                sudo -u postgres psql -c "CREATE DATABASE mydatabase OWNER myuser;"
+            # - name: Start PostgreSQL service
+            #   run: |
+            #     sudo service postgresql start
+            #     sudo -u postgres psql -c "CREATE USER myuser WITH PASSWORD 'mypassword';"
+            #     sudo -u postgres psql -c "CREATE DATABASE mydatabase OWNER myuser;"
 
-            - name: Wait for PostgreSQL
-              run: wait-for-it localhost:5432 -t 30 -- echo "PostgreSQL is ready!"
+            # - name: Wait for PostgreSQL
+            #   run: wait-for-it localhost:5432 -t 30 -- echo "PostgreSQL is ready!"
 
-            - name: Run SQL commands
-              run: |
-                PGPASSWORD=mypassword psql -h localhost -U myuser -d mydatabase -c "SELECT 'Hello, PostgreSQL!' AS greeting;"
+            # - name: Run SQL commands
+            #   run: |
+            #     PGPASSWORD=mypassword psql -h localhost -U myuser -d mydatabase -c "SELECT 'Hello, PostgreSQL!' AS greeting;"
 
             - name: Checkout repository at a specific tag
               uses: actions/checkout@v3
               with:
                 repository: osm2pgsql-dev/osm2pgsql
-                ref: 2.0.0   
+                ref: 2.0.0 
+                path: /home/runner/work/osm2pgsql
             
             - run: pwd
             - run: ls
-            
+            - run: ls /home/runner/work/osm2pgsql
