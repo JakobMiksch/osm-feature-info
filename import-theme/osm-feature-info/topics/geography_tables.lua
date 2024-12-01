@@ -13,7 +13,7 @@ themepark:add_table{
     columns = {{
         column = 'geog',
         type = 'geometry',
-        projection = '4326',
+        projection = 4326,
         not_null = true,
         sql_type = 'geography(geometry)'
     }},
