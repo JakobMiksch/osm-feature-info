@@ -2,7 +2,7 @@
 
 ```sh
 # install
-npm i
+npm install
 
 # develop on http://localhost:5173
 npm run dev

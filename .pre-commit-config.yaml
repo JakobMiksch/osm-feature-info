@@ -17,6 +17,6 @@ repos:
     hooks:
       - id: lua-check
         name: lua-check
-        entry: luacheck import-theme/
+        entry: luacheck data/import-theme/
         language: system
         pass_filenames: false
