@@ -9,13 +9,17 @@ Tested on Debian/Ubuntu systems.
 ### From scratch
 
 1. Ensure you have a Postgres/PostGIS database available
-2. Install `osm2pgsql` with minimal version `2.0.0`
+2. Install [osm2pgsql](https://osm2pgsql.org/) with minimal version `2.0.0`
 3. Setup Themepark
 
     - clone the repo in a location of your choice: (<https://github.com/osm2pgsql-dev/osm2pgsql-themepark>)
-    - in your shell link the Themepark via this environment variable `export LUA_PATH="YOUR_PATH_TO/osm2pgsql-themepark/lua/?.lua;;"`
+    - in your shell link the Themepark via this environment variable:
 
-4. Import a OSM dump:
+    ```shell
+    export LUA_PATH="YOUR_PATH_TO/osm2pgsql-themepark/lua/?.lua;;"
+    ```
+
+4. Import an OSM extract:
 
     ```shell
     # set database connection
@@ -32,13 +36,13 @@ Tested on Debian/Ubuntu systems.
     --output=flex \
     --style=./data/flex_style.lua \
     --prefix=raw \
-    ./data/sample.pbf
+    ./PATH_TO_YOUR/OSM_EXTRACT.pbf
     ```
 
 5. Apply the feature info SQLfunction:
 
     ```shell
-    # uses the same environment variables as "osm2pgsql"
+    # use the same environment variables as above
     # you can also prompt for password using `-W`
     psql -f ./data/query_function.sql
     ```
@@ -53,7 +57,7 @@ Tested on Debian/Ubuntu systems.
     pg_featureserv
     ```
 
-7. Make a query and get a GeoJSON as response:
+7. make a query and get a GeoJSON as response to ensure it works as expected:
 
     ```shell
     export latitude=42.533888
@@ -67,7 +71,7 @@ Tested on Debian/Ubuntu systems.
     curl "http://localhost:9000/functions/postgisftw.osm_website_combi/items.json?latitude=${latitude}&longitude=${longitude}&radius=${radius}&min_lon=${min_lon}&min_lat=${min_lat}&max_lon=${max_lon}&max_lat=${max_lat}"
     ```
 
-8. [optional] Use the demo web client for testing and debugging. See respective [README](web-client/README.md)
+8. [optional] Use the demo web client for testing and debugging. See respective [README](web-client/README.md). You might need to fix some CORS issues.
 
 ### Using Docker
 
