@@ -1,0 +1,12 @@
+name: test-setup
+
+on:
+    push:
+      branches: [test-setup-ci]
+
+jobs:
+    run-setup-on-ubuntu:
+        name: Run npm on Ubuntu
+        runs-on: ubuntu-24.04
+        steps:
+            - run: echo "Hallo Welt"
