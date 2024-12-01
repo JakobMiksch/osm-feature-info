@@ -9,4 +9,25 @@ jobs:
         name: Run npm on Ubuntu
         runs-on: ubuntu-24.04
         steps:
-            - run: echo "Hallo Welt"
+            - name: Update and install PostgreSQL
+              run: |
+                sudo apt-get update
+                sudo apt-get install -y postgresql
+
+            - name: Start PostgreSQL service
+              run: |
+                sudo service postgresql start
+                sudo -u postgres psql -c "CREATE USER myuser WITH PASSWORD 'mypassword';"
+                sudo -u postgres psql -c "CREATE DATABASE mydatabase OWNER myuser;"
+
+            - name: Check PostgreSQL Connection
+              run: |
+                until pg_isready -h localhost -p 5432 -U myuser; do
+                  echo "Waiting for PostgreSQL to be ready..."
+                  sleep 5
+                done
+                echo "PostgreSQL is ready!"
+
+            - name: Run SQL commands
+              run: |
+                PGPASSWORD=mypassword psql -h localhost -U myuser -d mydatabase -c "SELECT 'Hello, PostgreSQL!' AS greeting;"
