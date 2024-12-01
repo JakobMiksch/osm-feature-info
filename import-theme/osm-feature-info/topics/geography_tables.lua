@@ -1,10 +1,7 @@
 local themepark = ...
 
 -- reuse function from other theme
-themepark:init_theme('basic')
-local has_area_tags = themepark.themes['basic'].has_area_tags
-
-themepark:set_option('srid', 4326)
+local has_area_tags = themepark:init_theme('basic').has_area_tags
 
 themepark:add_table{
     name = 'geometries',
@@ -16,7 +13,7 @@ themepark:add_table{
     columns = {{
         column = 'geog',
         type = 'geometry',
-        projection = '4326',
+        projection = 4326,
         not_null = true,
         sql_type = 'geography(geometry)'
     }},
