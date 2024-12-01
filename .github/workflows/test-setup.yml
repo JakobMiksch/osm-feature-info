@@ -32,8 +32,8 @@ jobs:
               with:
                 repository: osm2pgsql-dev/osm2pgsql
                 ref: 2.0.0 
-                path: /home/runner/work/osm2pgsql
+                path: /home/runner/work/osm-feature-info/osm-feature-info/osm2pgsql
             
             - run: pwd
             - run: ls
-            - run: ls /home/runner/work/osm2pgsql
+            - run: ls ./osm2pgsql
