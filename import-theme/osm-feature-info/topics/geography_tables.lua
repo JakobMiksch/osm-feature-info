@@ -1,8 +1,8 @@
 local themepark = ...
 
 -- reuse function from other theme
-themepark:init_theme('basic')
-local has_area_tags = themepark.themes['basic'].has_area_tags
+local has_area_tags = themepark:init_theme('basic').has_area_tags
+
 
 themepark:set_option('srid', 4326)
 
