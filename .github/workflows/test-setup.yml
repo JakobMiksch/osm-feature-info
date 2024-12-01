@@ -6,7 +6,7 @@ on:
 
 jobs:
     run-setup-on-ubuntu:
-        name: Run npm on Ubuntu
+        name: Run Setup on Ubuntu
         runs-on: ubuntu-24.04
         steps:
             # - name: Install packages
@@ -26,8 +26,10 @@ jobs:
             # - name: Run SQL commands
             #   run: |
             #     PGPASSWORD=mypassword psql -h localhost -U myuser -d mydatabase -c "SELECT 'Hello, PostgreSQL!' AS greeting;"
+            - name: Checkout main repo
+              uses: actions/checkout@v3
 
-            - name: Checkout repository at a specific tag
+            - name: Checkout osm2pgsql
               uses: actions/checkout@v3
               with:
                 repository: osm2pgsql-dev/osm2pgsql
