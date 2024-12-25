@@ -41,12 +41,14 @@ OR REPLACE FUNCTION postgisftw.osm_website_objects_around (
   osm_type text,
   osm_id bigint,
   tags jsonb,
+  geometry_type text,
   geom geometry
 ) AS $$
     SELECT
     osm_type,
     osm_id,
     tags,
+    REPLACE(ST_GeometryType(geog::geometry), 'ST_', '') as geometry_type,
     CASE
         WHEN NOT ST_Covers (
           ST_MakeEnvelope (min_lon, min_lat, max_lon, max_lat, 4326)::geography,
@@ -72,12 +74,14 @@ OR REPLACE FUNCTION postgisftw.osm_website_objects_enclosing (
   osm_type text,
   osm_id bigint,
   tags jsonb,
+  geometry_type text,
   geom geometry
 ) AS $$
     SELECT
     osm_type,
     osm_id,
     tags,
+    REPLACE(ST_GeometryType(geog::geometry), 'ST_', '') as geometry_type,
     CASE
         WHEN NOT ST_Covers (
           ST_MakeEnvelope (min_lon, min_lat, max_lon, max_lat, 4326)::geography,
@@ -105,11 +109,12 @@ OR REPLACE FUNCTION postgisftw.osm_website_combi (
   osm_id bigint,
   query_type text,
   tags jsonb,
+  geometry_type text,
   geom geometry
 ) AS $$
-  SELECT osm_type, osm_id, 'around' as query_type, tags, geom FROM postgisftw.osm_website_objects_around( latitude, longitude, radius, min_lat, min_lon, max_lat, max_lon )
+  SELECT osm_type, osm_id, 'around' as query_type,  tags, geometry_type, geom FROM postgisftw.osm_website_objects_around( latitude, longitude, radius, min_lat, min_lon, max_lat, max_lon )
 
   UNION
 
-  SELECT osm_type, osm_id, 'enclosing' as query_type, tags, geom FROM postgisftw.osm_website_objects_enclosing( latitude, longitude, min_lat, min_lon, max_lat, max_lon )
+  SELECT osm_type, osm_id, 'enclosing' as query_type, tags, geometry_type, geom FROM postgisftw.osm_website_objects_enclosing( latitude, longitude, min_lat, min_lon, max_lat, max_lon )
 $$ LANGUAGE sql STABLE PARALLEL SAFE;
