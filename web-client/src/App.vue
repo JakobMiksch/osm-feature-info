@@ -9,20 +9,15 @@
         color: zoom < minZoomForQuery ? 'red' : 'green'
       }">Zoom Level: {{ zoom?.toFixed(2) }}</p>
       <p>Search Radius: {{ extractedSearchRadius }} meter</p>
-      <p v-if="displayedFeatures.length > 0">{{ displayedFeatures.length }} features found</p>
+      <p v-if="foundFeatures.length > 0">{{ foundFeatures.length }} features found</p>
 
       <div :style="{flex: 1, overflowY: 'auto'}">
-        <p v-for="feature in displayedFeatures" :key="feature" :style="{marginLeft: '10px', marginRight: '10px'}">
-          <b>{{
-          // @ts-ignore
-          feature.geometry ? '' : 'No geometry, because outside of BBOX' }}
-          </b>
-          {{ feature }}
-        </p>
+       <OsmInfo :headline="QueryType.ENCLOSING" :results="enclosingFeatures"/>
+       <OsmInfo :headline="QueryType.AROUND" :results="aroundFeatures"/>
       </div>
     </div>
 
-    <OlMap id="map" :style="{flex: 1}"/>
+    <OlMap id="map" :style="{ flex: 1 }"/>
   </main>
 </template>
 
@@ -35,6 +30,8 @@ import 'ol/ol.css'
 import VectorSource from 'ol/source/Vector'
 import VectorLayer from 'ol/layer/Vector'
 
+import OsmInfo from './components/OsmInfo.vue'
+
 import {GeoJSON} from "ol/format"
 import XYZ from 'ol/source/XYZ'
 import { Feature } from 'ol'
@@ -46,20 +43,37 @@ useGeographic()
 const minZoomForQuery = 14
 
 const { map, onMapClick, extent, zoom } = useOl()
-const displayedFeatures = ref([])
+const foundFeatures = ref([])
 const functionName = ref("")
 const functionNameOptions = ref<string[]>()
 const clickedLatitude = ref(NaN)
 const clickedLongitude = ref(NaN)
 
+enum QueryType {
+  ENCLOSING = 'enclosing',
+  AROUND = 'around'
+}
+
 // @ts-ignore
 const extractedSearchRadius = computed(() => Math.round(10 * Math.pow(1.5, 19 - zoom.value)))
+
+const displayedResult = computed(() => foundFeatures.value.map(feature => {
+  const { geometry, properties } = feature
+  const { query_type, osm_id, osm_type, tags, geometry_type } = properties
+  const url = `https://osm.org/${osm_type}/${osm_id}`
+  const hidden = !geometry
+  return { url, geometry_type, tags, query_type, osm_id, osm_type, hidden }
+}))
+
+const enclosingFeatures = computed(() => displayedResult.value.filter(result => result.query_type === QueryType.ENCLOSING))
+
+const aroundFeatures = computed(()=>displayedResult.value.filter(result => result.query_type === QueryType.AROUND))
 
 const resultVectorSource = new VectorSource()
 const pointDataSource = new VectorSource()
 
 const reset = (() => {
-  displayedFeatures.value = []
+  foundFeatures.value = []
   resultVectorSource.clear()
   pointDataSource.clear()
 })
@@ -69,7 +83,7 @@ const triggerRequest = () => {
   // @ts-ignore
   if (zoom.value < minZoomForQuery) {
     // @ts-ignore
-    alert(`Zoom must be below ${minZoom}`)
+    alert(`Zoom must be below ${minZoomForQuery}`)
     return
   }
 
@@ -84,7 +98,7 @@ const triggerRequest = () => {
     .then(geojson => {
 
     const { features } = geojson
-    displayedFeatures.value = features
+    foundFeatures.value = features
 
     const olFeatures = new GeoJSON().readFeatures(geojson) as any // TODO: fix TS anys
 
