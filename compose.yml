@@ -33,7 +33,7 @@ services:
       interval: 10s
 
   osm2pgsql:
-    build: ./docker-osm2pgsql
+    image: iboates/osm2pgsql:2.0.1
     environment:
       - PGHOST
       - PGDATABASE
