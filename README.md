@@ -89,11 +89,8 @@ wget -O data/sample.pbf https://download.geofabrik.de/europe/andorra-latest.osm.
 # [optional] shut down existing compose stack
 docker compose down --volumes --remove-orphans
 
-# build docker images
-docker compose build
-
-# start services (and also built images)
-docker compose up -d --build
+# start services
+docker compose up -d
 
 # load data into db
 docker compose run --rm osm2pgsql \
