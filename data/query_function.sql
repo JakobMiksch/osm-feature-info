@@ -3,7 +3,12 @@ CREATE SCHEMA IF NOT EXISTS postgisftw;
 CREATE OR REPLACE VIEW
   view_objects AS
 SELECT
-  g.osm_type,
+  CASE
+    WHEN g.osm_type = 'N' then 'node'
+    WHEN g.osm_type = 'W' then 'way'
+    WHEN g.osm_type = 'R' then 'relation'
+    ELSE NULL
+  END as osm_type,
   g.osm_id,
   CASE
     WHEN g.osm_type = 'N' then n.tags
@@ -33,7 +38,7 @@ OR REPLACE FUNCTION postgisftw.osm_website_objects_around (
   max_lat float,
   max_lon float
 ) RETURNS TABLE (
-  osm_type char,
+  osm_type text,
   osm_id bigint,
   tags jsonb,
   geom geometry
@@ -64,7 +69,7 @@ OR REPLACE FUNCTION postgisftw.osm_website_objects_enclosing (
   max_lat float,
   max_lon float
 ) RETURNS TABLE (
-  osm_type char,
+  osm_type text,
   osm_id bigint,
   tags jsonb,
   geom geometry
@@ -96,7 +101,7 @@ OR REPLACE FUNCTION postgisftw.osm_website_combi (
   max_lat float,
   max_lon float
 ) RETURNS TABLE (
-  osm_type char,
+  osm_type text,
   osm_id bigint,
   query_type text,
   tags jsonb,
