@@ -52,9 +52,7 @@ themepark:add_proc('relation', function(object)
 
     if relation_type == 'route' then
         geog = object:as_multilinestring()
-    elseif relation_type == 'boundary' or (relation_type == 'multipolygon' and object.tags.boundary) then
-        geog = object:as_multilinestring():line_merge()
-    elseif relation_type == 'multipolygon' then
+    elseif relation_type == 'boundary' or relation_type == 'multipolygon' then
         geog = object:as_multipolygon()
     end
 
