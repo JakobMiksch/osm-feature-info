@@ -1,6 +1,6 @@
 services:
   pg_featureserv:
-    image: pramsey/pg_featureserv:20241104
+    image: pramsey/pg_featureserv:20250128
     ports:
       - "9000:9000"
     environment:

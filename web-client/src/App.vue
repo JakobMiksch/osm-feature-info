@@ -166,7 +166,7 @@ onMounted(() => {
   axios('http://localhost:9000/collections/public.geometries.json')
     .then(response => response.data)
     .then(collectionInfo => {
-      const bbox = collectionInfo.extent.spatial.bbox
+      const bbox = collectionInfo.extent.spatial.bbox[0]
 
       map.value.getView().fit(bbox)
       map.value.getView().setZoom(minZoomForQuery + 1)
