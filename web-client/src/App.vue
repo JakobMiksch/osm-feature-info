@@ -9,11 +9,13 @@
         color: zoom < minZoomForQuery ? 'red' : 'green'
       }">Zoom Level: {{ zoom?.toFixed(2) }}</p>
       <p>Search Radius: {{ extractedSearchRadius }} meter</p>
-      <p v-if="foundFeatures.length > 0">{{ foundFeatures.length }} features found</p>
+      <p v-if="foundFeatures.length > 0">
+        total {{ foundFeatures.length }} - around {{ aroundFeatures.length }} - enclosing {{ enclosingFeatures.length }}
+      </p>
 
       <div :style="{flex: 1, overflowY: 'auto'}">
-       <OsmInfo :headline="QueryType.ENCLOSING" :results="enclosingFeatures"/>
        <OsmInfo :headline="QueryType.AROUND" :results="aroundFeatures"/>
+       <OsmInfo :headline="QueryType.ENCLOSING" :results="enclosingFeatures"/>
       </div>
     </div>
 
