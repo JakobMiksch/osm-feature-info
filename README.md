@@ -8,7 +8,7 @@ Tested on Debian/Ubuntu systems.
 
 ### From scratch
 
-1. Ensure you have a Postgres/PostGIS database available
+1. Ensure you have a Postgres/PostGIS database available and run `postgres/docker-entrypoint-initdb.d/01_create_postgis.sql`.
 2. Install [osm2pgsql](https://osm2pgsql.org/) with minimal version `2.0.0`
 3. Setup Themepark
 
@@ -119,6 +119,9 @@ docker compose run --rm osm2pgsql replication init \
 docker compose run --rm osm2pgsql replication update \
   --prefix=raw \
   --verbose
+
+# rerun this function
+docker compose exec postgres psql -f /data/query_function.sql
 ```
 
 ## Request API

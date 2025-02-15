@@ -16,7 +16,16 @@ themepark:add_table{
         projection = 4326,
         not_null = true,
         sql_type = 'geography(geometry)'
-    }},
+    },
+    { column = 'count_vertices',
+      create_only = true,
+      sql_type = 'int GENERATED ALWAYS AS (ST_NPoints(geog::geometry)) STORED NOT NULL'
+    },
+    { column = 'geom_type',
+      create_only = true,
+      sql_type = 'text GENERATED ALWAYS AS (ST_GeometryType(geog::geometry)) STORED NOT NULL'
+    }
+},
     indexes = {{
         column = 'geog',
         method = 'gist'
