@@ -1,7 +1,7 @@
 CREATE SCHEMA IF NOT EXISTS postgisftw;
 
 CREATE OR REPLACE VIEW
-  view_objects AS
+  view_osm_objects AS
 SELECT
   CASE
     WHEN g.osm_type = 'N' then 'node'
@@ -56,7 +56,7 @@ OR REPLACE FUNCTION postgisftw.osm_website_objects_around (
         ) THEN NULL::geometry
         ELSE geog::geometry
     END AS geog
-    FROM view_objects
+    FROM view_osm_objects
   WHERE ST_DWithin(geog, ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography, radius)
 $$ LANGUAGE sql STABLE PARALLEL SAFE;
 
@@ -89,7 +89,7 @@ OR REPLACE FUNCTION postgisftw.osm_website_objects_enclosing (
         ) THEN NULL::geometry
         ELSE geog::geometry
     END AS geog
-    FROM view_objects
+    FROM view_osm_objects
   WHERE ST_Covers(geog, ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography)
 $$ LANGUAGE sql STABLE PARALLEL SAFE;
 
