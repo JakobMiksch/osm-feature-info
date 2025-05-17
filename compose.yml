@@ -1,6 +1,6 @@
 services:
   pg_featureserv:
-    image: pramsey/pg_featureserv:20250128
+    image: pramsey/pg_featureserv:20250414
     ports:
       - "9000:9000"
     environment:
@@ -34,7 +34,7 @@ services:
       interval: 10s
 
   osm2pgsql:
-    image: iboates/osm2pgsql:2.0.1
+    image: iboates/osm2pgsql:2.1.1
     environment:
       - PGHOST
       - PGDATABASE

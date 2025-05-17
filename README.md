@@ -84,7 +84,8 @@ Ensure you have Docker installed. See [official instructions](https://docs.docke
 
 ```shell
 # download sample data (or use your own)
-wget -O data/sample.pbf https://download.geofabrik.de/europe/andorra-latest.osm.pbf
+
+wget -O data/sample.pbf https://download.geofabrik.de/europe/andorra-$(date --date="3 days ago" +"%y%m%d").osm.pbf
 
 # [optional] shut down existing compose stack
 docker compose down --volumes --remove-orphans
