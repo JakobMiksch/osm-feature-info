@@ -7,10 +7,11 @@
         </h4>
         <table>
         <tbody>
-            <tr v-for="(value, key) in tags" :key="key">
-            <td :style="{fontWeight: 'bold'}">{{ key }}</td>
-            <td>{{ value }}</td>
+            <tr v-for="([key, value]) in Object.entries(tags).slice(0, countShownTags)">
+              <td :style="{fontWeight: 'bold'}">{{ key }}</td>
+              <td>{{ value }}</td>
             </tr>
+            <tr v-if="Object.keys(tags).length > countShownTags">{{ Object.keys(tags).length - countShownTags  }} more tags</tr>
         </tbody>
         </table>
     </p>
@@ -19,10 +20,20 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
-const props = defineProps<{
-  results: any;
-  headline: string;
-}>();
+const props = defineProps({
+  results: {
+    type: Array as () => any[],
+    required: true
+  },
+  headline: {
+    type: String,
+    required: true
+  },
+  countShownTags: {
+    type: Number,
+    default: 5
+  }
+});
 
 const hasResults = computed(() => !!props.results.length);
 </script>
