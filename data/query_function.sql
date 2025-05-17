@@ -63,6 +63,7 @@ OR REPLACE FUNCTION postgisftw.osm_website_objects_around (
     osm_id,
     tags,
     REPLACE(ST_GeometryType(geog::geometry), 'ST_', '') as geometry_type,
+    -- only return geometry if it is in viewport
     CASE
         WHEN NOT ST_Covers (
           ST_MakeEnvelope (min_lon, min_lat, max_lon, max_lat, 4326)::geography,
@@ -96,6 +97,7 @@ OR REPLACE FUNCTION postgisftw.osm_website_objects_enclosing_small (
     osm_id,
     tags,
     REPLACE(ST_GeometryType(geog::geometry), 'ST_', '') as geometry_type,
+    -- only return geometry if it is in viewport
     CASE
         WHEN NOT ST_Covers (
           ST_MakeEnvelope (min_lon, min_lat, max_lon, max_lat, 4326)::geography,
@@ -135,6 +137,7 @@ OR REPLACE FUNCTION postgisftw.osm_website_objects_enclosing_large (
         ELSE NULL
       END as tags,
       REPLACE(ST_GeometryType(geom), 'ST_', '') as geometry_type,
+    -- only return geometry if it is in viewport
       CASE
         WHEN NOT ST_Covers (
           ST_MakeEnvelope (min_lon, min_lat, max_lon, max_lat, 4326)::geography,
