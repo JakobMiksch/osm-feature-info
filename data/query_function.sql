@@ -1,15 +1,3 @@
-INSERT INTO
-  polygons_subdivided (osm_id, osm_type, geom)
-SELECT
-  osm_id,
-  osm_type,
-  ST_SubDivide (geog::geometry) AS geom
-FROM
-  geometries
-WHERE
-  count_vertices > 256
-  AND geom_type IN ('ST_Polygon', 'ST_MultiPolygon');
-
 DROP VIEW IF EXISTS view_osm_objects;
 
 CREATE OR REPLACE VIEW
@@ -107,7 +95,7 @@ OR REPLACE FUNCTION postgisftw.osm_website_objects_enclosing_small (
     END AS geog
     FROM view_osm_objects
   WHERE ST_Intersects(geog, ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)::geography)
-  AND count_vertices <= 256
+  AND count_vertices <= max_vertices()
 $$ LANGUAGE sql STABLE PARALLEL SAFE;
 
 DROP FUNCTION IF EXISTS postgisftw.osm_website_objects_enclosing_large;
@@ -147,6 +135,7 @@ OR REPLACE FUNCTION postgisftw.osm_website_objects_enclosing_large (
     END AS geog
       FROM polygons_subdivided as p
   LEFT JOIN view_osm_objects AS v ON p.osm_id = v.osm_id
+  -- TODO: maybe we do not need to join nodes, because they are never a polygon. But it should not harm either ...
   LEFT JOIN raw_nodes AS n ON p.osm_id = n.id
   AND p.osm_type = 'N'
   LEFT JOIN raw_ways AS w ON p.osm_id = w.id
