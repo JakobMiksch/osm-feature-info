@@ -23,7 +23,7 @@ themepark:add_table{
     },
     { column = 'geom_type',
       create_only = true,
-      sql_type = 'text GENERATED ALWAYS AS (ST_GeometryType(geog::geometry)) STORED NOT NULL'
+      sql_type = 'text GENERATED ALWAYS AS (GeometryType(geog::geometry)) STORED NOT NULL'
     }
 },
     indexes = {{

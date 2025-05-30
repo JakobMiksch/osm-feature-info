@@ -24,4 +24,4 @@ FROM
     geometries
 WHERE
    ST_NPoints(geog::geometry) > max_vertices()
-    AND ST_GeometryType(geog::geometry) IN ('ST_Polygon', 'ST_MultiPolygon');
+    AND GeometryType(geog::geometry) IN ('POLYGON', 'MULTIPOLYGON');
