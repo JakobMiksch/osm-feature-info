@@ -50,7 +50,7 @@ OR REPLACE FUNCTION postgisftw.osm_website_objects_around (
     osm_type,
     osm_id,
     tags,
-    REPLACE(ST_GeometryType(geog::geometry), 'ST_', '') as geometry_type,
+    GeometryType(geog::geometry) as geometry_type,
     -- only return geometry if it is in viewport
     CASE
         WHEN NOT ST_Covers (
@@ -84,7 +84,7 @@ OR REPLACE FUNCTION postgisftw.osm_website_objects_enclosing_small (
     osm_type,
     osm_id,
     tags,
-    REPLACE(ST_GeometryType(geog::geometry), 'ST_', '') as geometry_type,
+    GeometryType(geog::geometry) as geometry_type,
     -- only return geometry if it is in viewport
     CASE
         WHEN NOT ST_Covers (
@@ -124,7 +124,7 @@ OR REPLACE FUNCTION postgisftw.osm_website_objects_enclosing_large (
         WHEN p.osm_type = 'R' then r.tags
         ELSE NULL
       END as tags,
-      REPLACE(ST_GeometryType(geom), 'ST_', '') as geometry_type,
+      GeometryType(geog::geometry) as geometry_type,
     -- only return geometry if it is in viewport
       CASE
         WHEN NOT ST_Covers (
