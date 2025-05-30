@@ -1,13 +1,13 @@
 -- set constant 'max_vertices'
 INSERT INTO osm2pgsql_properties (property, value)
-VALUES ('max_vertices', '256')
+VALUES ('_max_vertices', '256')
 ON CONFLICT (property)
 DO UPDATE SET value = EXCLUDED.value;
 
 CREATE OR REPLACE FUNCTION max_vertices()
 RETURNS INTEGER AS $$
 BEGIN
-    RETURN (SELECT value FROM osm2pgsql_properties where property='max_vertices');
+    RETURN (SELECT value FROM osm2pgsql_properties where property='_max_vertices');
 END;
 $$ LANGUAGE plpgsql;
 
