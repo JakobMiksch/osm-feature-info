@@ -20,8 +20,12 @@ Tested on Debian/Ubuntu systems. Ensure you have Docker installed. See [official
 #    - europe/germany/baden-wuerttemberg
 export REGION=europe/andorra
 export DATE=$(date --date="3 days ago" +"%y%m%d")
+export OSM_FILE_IDENTIFIER=${REGION}-${DATE}.osm.pbf
 
-wget -O data/sample.pbf https://download.geofabrik.de/${REGION}-${DATE}.osm.pbf
+# download file
+wget -O ./data/sample.pbf https://download.geofabrik.de/${OSM_FILE_IDENTIFIER}
+# copy to root directory of project
+cp ./data/sample.pbf $(basename $OSM_FILE_IDENTIFIER)
 
 # [optional] shut down existing compose stack
 docker compose down --volumes --remove-orphans
@@ -56,6 +60,7 @@ docker compose exec postgres psql -f /data/query_function.sql
 docker compose run --rm osm2pgsql replication update \
   --prefix=raw \
   --verbose
+
 ```
 
 Demo client can be accessed via <http://localhost:4173/>.
