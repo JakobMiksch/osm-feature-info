@@ -23,6 +23,21 @@ FROM
   LEFT JOIN raw_rels AS r ON g.osm_id = r.id
   AND g.osm_type = 'R';
 
+DROP FUNCTION IF EXISTS convert_osm_type;
+
+CREATE OR REPLACE FUNCTION long_osm_type(short_osm_type CHAR)
+RETURNS TEXT AS $$
+BEGIN
+    RETURN
+        CASE
+            WHEN short_osm_type = 'N' THEN 'node'
+            WHEN short_osm_type = 'W' THEN 'way'
+            WHEN short_osm_type = 'R' THEN 'relation'
+            ELSE NULL
+        END;
+END;
+$$ LANGUAGE plpgsql;
+
 DROP FUNCTION IF EXISTS postgisftw.osm_website_objects_around;
 
 CREATE
@@ -42,12 +57,7 @@ OR REPLACE FUNCTION postgisftw.osm_website_objects_around (
   geom geometry
 ) AS $$
     SELECT
-    CASE
-      WHEN osm_type = 'N' then 'node'
-      WHEN osm_type = 'W' then 'way'
-      WHEN osm_type = 'R' then 'relation'
-      ELSE NULL
-    END as osm_type,
+    long_osm_type(osm_type) as osm_type,
     osm_id,
     tags,
     GeometryType(geog::geometry) as geometry_type,
@@ -81,12 +91,7 @@ OR REPLACE FUNCTION postgisftw.osm_website_objects_enclosing_small (
   geom geometry
 ) AS $$
     SELECT
-    CASE
-      WHEN osm_type = 'N' then 'node'
-      WHEN osm_type = 'W' then 'way'
-      WHEN osm_type = 'R' then 'relation'
-      ELSE NULL
-    END as osm_type,
+    long_osm_type(osm_type) as osm_type,
     osm_id,
     tags,
     GeometryType(geog::geometry) as geometry_type,
@@ -121,12 +126,7 @@ OR REPLACE FUNCTION postgisftw.osm_website_objects_enclosing_large (
   geom geometry
 ) AS $$
   SELECT
-      CASE
-        WHEN p.osm_type = 'N' then 'node'
-        WHEN p.osm_type = 'W' then 'way'
-        WHEN p.osm_type = 'R' then 'relation'
-        ELSE NULL
-      END as osm_type,
+      long_osm_type(p.osm_type) as osm_type,
       p.osm_id,
       CASE
         WHEN p.osm_type = 'N' then n.tags
