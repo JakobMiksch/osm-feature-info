@@ -3,7 +3,7 @@ OR REPLACE FUNCTION perform_polygon_subdivide () RETURNS TRIGGER AS $$
 BEGIN
 
     IF ST_NPoints(NEW.geog::geometry) > max_vertices()
-       AND ST_GeometryType(NEW.geog::geometry) IN ('ST_Polygon', 'ST_MultiPolygon')
+       AND GeometryType(NEW.geog::geometry) IN ('POLYGON', 'MULTIPOLYGON')
     THEN
         INSERT INTO polygons_subdivided (osm_id, osm_type, geom)
         VALUES (
@@ -25,7 +25,7 @@ CREATE
 OR REPLACE FUNCTION delete_subdivided_polygon () RETURNS TRIGGER AS $$
 BEGIN
     -- we do not check the vertices count like in the other statements, because it does not matter in this case
-    IF ST_GeometryType(OLD.geog::geometry) IN ('ST_Polygon', 'ST_MultiPolygon')
+    IF GeometryType(OLD.geog::geometry) IN ('POLYGON', 'MULTIPOLYGON')
     THEN
         DELETE FROM polygons_subdivided WHERE osm_id = OLD.osm_id;
     END IF;
@@ -43,7 +43,7 @@ OR REPLACE FUNCTION update_subdivided_polygon () RETURNS TRIGGER AS $$
 BEGIN
     IF ST_NPoints(NEW.geog::geometry) > max_vertices()
     THEN
-        IF ST_GeometryType(NEW.geog::geometry) IN ('ST_Polygon', 'ST_MultiPolygon') THEN
+        IF GeometryType(NEW.geog::geometry) IN ('POLYGON', 'MULTIPOLYGON') THEN
             DELETE FROM polygons_subdivided WHERE osm_id = OLD.osm_id;
             INSERT INTO polygons_subdivided (osm_id, osm_type, geom)
             VALUES (
