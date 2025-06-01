@@ -3,13 +3,8 @@ DROP VIEW IF EXISTS view_osm_objects;
 CREATE OR REPLACE VIEW
   view_osm_objects AS
 SELECT
-  CASE
-    WHEN g.osm_type = 'N' then 'node'
-    WHEN g.osm_type = 'W' then 'way'
-    WHEN g.osm_type = 'R' then 'relation'
-    ELSE NULL
-  END as osm_type,
   g.osm_id,
+  g.osm_type,
   CASE
     WHEN g.osm_type = 'N' then n.tags
     WHEN g.osm_type = 'W' then w.tags
@@ -47,7 +42,12 @@ OR REPLACE FUNCTION postgisftw.osm_website_objects_around (
   geom geometry
 ) AS $$
     SELECT
-    osm_type,
+    CASE
+      WHEN osm_type = 'N' then 'node'
+      WHEN osm_type = 'W' then 'way'
+      WHEN osm_type = 'R' then 'relation'
+      ELSE NULL
+    END as osm_type,
     osm_id,
     tags,
     GeometryType(geog::geometry) as geometry_type,
@@ -81,7 +81,12 @@ OR REPLACE FUNCTION postgisftw.osm_website_objects_enclosing_small (
   geom geometry
 ) AS $$
     SELECT
-    osm_type,
+    CASE
+      WHEN osm_type = 'N' then 'node'
+      WHEN osm_type = 'W' then 'way'
+      WHEN osm_type = 'R' then 'relation'
+      ELSE NULL
+    END as osm_type,
     osm_id,
     tags,
     GeometryType(geog::geometry) as geometry_type,
@@ -116,7 +121,12 @@ OR REPLACE FUNCTION postgisftw.osm_website_objects_enclosing_large (
   geom geometry
 ) AS $$
   SELECT
-      p.osm_type,
+      CASE
+        WHEN p.osm_type = 'N' then 'node'
+        WHEN p.osm_type = 'W' then 'way'
+        WHEN p.osm_type = 'R' then 'relation'
+        ELSE NULL
+      END as osm_type,
       p.osm_id,
       CASE
         WHEN p.osm_type = 'N' then n.tags
@@ -134,7 +144,7 @@ OR REPLACE FUNCTION postgisftw.osm_website_objects_enclosing_large (
       ELSE v.geog::geometry
     END AS geog
       FROM polygons_subdivided as p
-  LEFT JOIN view_osm_objects AS v ON p.osm_id = v.osm_id
+  LEFT JOIN view_osm_objects AS v ON p.osm_id = v.osm_id  AND p.osm_type = v.osm_type
   -- TODO: maybe we do not need to join nodes, because they are never a polygon. But it should not harm either ...
   LEFT JOIN raw_nodes AS n ON p.osm_id = n.id
   AND p.osm_type = 'N'
