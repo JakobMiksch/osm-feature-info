@@ -1,0 +1,53 @@
+name: test-setup
+
+on:
+    push:
+      branches: [test-setup-ci]
+
+jobs:
+    run-setup-on-ubuntu:
+        name: Run Setup on Ubuntu
+        runs-on: ubuntu-24.04
+        steps:
+            # - name: Install packages
+            #   run: |
+            #     sudo apt-get update
+            #     sudo apt-get install -y postgresql wait-for-it
+
+            # - name: Start PostgreSQL service
+            #   run: |
+            #     sudo service postgresql start
+            #     sudo -u postgres psql -c "CREATE USER myuser WITH PASSWORD 'mypassword';"
+            #     sudo -u postgres psql -c "CREATE DATABASE mydatabase OWNER myuser;"
+
+            # - name: Wait for PostgreSQL
+            #   run: wait-for-it localhost:5432 -t 30 -- echo "PostgreSQL is ready!"
+
+            # - name: Run SQL commands
+            #   run: |
+            #     PGPASSWORD=mypassword psql -h localhost -U myuser -d mydatabase -c "SELECT 'Hello, PostgreSQL!' AS greeting;"
+            - name: Checkout main repo
+              uses: actions/checkout@v3
+
+            - name: Checkout osm2pgsql
+              uses: actions/checkout@v3
+              with:
+                repository: osm2pgsql-dev/osm2pgsql
+                ref: 2.0.0 
+                path: /home/runner/work/osm-feature-info/osm-feature-info/osm2pgsql
+
+            - name: Checkout themepark
+              uses: actions/checkout@v3
+              with:
+                repository: osm2pgsql-dev/osm2pgsql-themepark
+                path: /home/runner/work/osm-feature-info/osm-feature-info/osm2pgsql-themepark
+
+            - name: Checkout pg_featureserv
+              uses: actions/checkout@v3
+              with:
+                repository: CrunchyData/pg_featureserv
+                path: /home/runner/work/osm-feature-info/osm-feature-info/pg_featureserv             
+            
+            - run: pwd
+            - run: ls
+
